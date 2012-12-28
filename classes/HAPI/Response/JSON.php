@@ -1,4 +1,2 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-class Kohana_HAPI_Exception extends Kohana_Exception {
-
-}
+class HAPI_Response_JSON extends Kohana_HAPI_Response_JSON {}
