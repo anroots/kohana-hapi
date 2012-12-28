@@ -1,4 +1,4 @@
-# Kohana Hapi
+# Kohana HAPI
 
 **H**yperText Transfer Protocol **A**pplication **P**rogramming **I**nterface
 
