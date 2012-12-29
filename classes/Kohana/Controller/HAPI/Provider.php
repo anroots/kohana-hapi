@@ -12,9 +12,42 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 {
 
 	/**
+	 * @since 1.0
+	 */
+	const DEFAULT_API_VERSION = '1.0';
+
+	/**
 	 * @var HAPI_Response
+	 * @since 1.0
 	 */
 	public $hapi_response;
+
+	/**
+	 * @var bool
+	 * @since 1.0
+	 */
+	protected $_use_uniform_get = TRUE;
+
+	/**
+	 * @var string
+	 */
+	private $_version;
+
+
+	public function get_version()
+	{
+		return $this->_version;
+	}
+
+	public function before()
+	{
+		parent::before();
+
+		// Instantiate the encoder object for the response (based on the Accept header)
+		$this->hapi_response = $this->_get_response_encoder();
+
+		$this->_version = $this->_parse_version($this->hapi_response->content_type());
+	}
 
 	/**
 	 * Executes the current action, considering the HTTP verb
@@ -25,31 +58,13 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	 */
 	public function execute()
 	{
-
-		// Instantiate the encoder object for the response (based on the Accept header)
-		$this->hapi_response = $this->_get_response_encoder();
-
 		// Execute the "before action" method
 		$this->before();
 
-		// Determine the action to use
-		// Defaults to the HTTP verb used
-		$action = $this->request->method();
+		// Determine the Controller method to execute
+		$action = $this->_determine_action();
 
-		// Action (if not default) is appended to the HTTP verb
-		if ($this->request->action() !== Route::$default_action) {
-			$action .= '_'.$this->$this->request->action();
-		}
-
-		// If the action doesn't exist, it's a 404
-		if (! method_exists($this, $action)) {
-			throw new HTTP_Exception_404(
-				'The requested URL :uri was not found on this server.',
-				array(':uri' => $this->request->uri())
-			);
-		}
-
-		// Execute the action itself
+		// Execute the method itself
 		$this->{$action}();
 
 		// Execute the "after action" method
@@ -60,6 +75,36 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	}
 
 	/**
+	 * Determine the Controller method to execute based
+	 * on the HTTP method
+	 *
+	 * @return string
+	 * @throws HTTP_Exception_404
+	 * @since 1.0
+	 */
+	protected function _determine_action()
+	{
+		// Defaults method is the HTTP verb
+		$action = strtolower($this->request->method());
+
+		// Action (if not default) is appended to the HTTP verb
+		if ($this->request->action() !== Route::$default_action) {
+			$action .= '_'.$this->request->action();
+		} elseif (! $this->_use_uniform_get) {
+			$action .= $this->request->param('id') === NULL ? '_all' : '_one';
+		}
+
+		// If the action doesn't exist, it's a 404
+		if (! method_exists($this, $action)) {
+			throw new HTTP_Exception_404(
+				'The requested URL :uri was not found on this server.',
+				array(':uri' => $this->request->uri())
+			);
+		}
+		return $action;
+	}
+
+	/**
 	 * @since 1.0
 	 */
 	public function after()
@@ -67,6 +112,19 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		// Set the response body - ask HAPI encoder to transform its data into string
 		$this->response->body($this->hapi_response->encode());
 		parent::after();
+	}
+
+	/**
+	 * Shorthand
+	 *
+	 * @since 1.0
+	 * @param array $data
+	 * @return Kohana_Controller_HAPI_Provider
+	 */
+	public function hapi(array $data)
+	{
+		$this->hapi_response->set_data($data);
+		return $this;
 	}
 
 	/**
@@ -119,5 +177,23 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		$this->response->headers('Content-Type', $hapi_response->content_type());
 
 		return $hapi_response;
+	}
+
+	/**
+	 * Parse the HTTP Content-Type header and return current API version
+	 * Application APIs should be versioned by the following convention:
+	 *
+	 *     application/vnd.vendor.application-v2.0+json
+	 *
+	 * ...where vendor, application [second one] are placeholders
+	 *
+	 * @param string $content_type
+	 * @return string Current API version or 1.0 as the default
+	 * @since 1.0
+	 */
+	private function _parse_version($content_type)
+	{
+		preg_match('/-v(.*)\+/', $content_type, $matches);
+		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
 	}
 }

@@ -17,5 +17,6 @@ return [
 	 */
 	'encoders' => [
 		'application/json' => 'JSON',
+		'application/vnd.no99-v1.0+json' => 'JSON'
 	]
 ];
