@@ -6,9 +6,8 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-class Kohana_HAPI_Response_JSON extends HAPI_Response_Encoder implements HAPI_Response_Encodable
+class Kohana_HAPI_Response_JSON extends Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 {
-
 	public function encode()
 	{
 		return json_encode($this->_data);

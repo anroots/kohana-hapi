@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Abstract data provider controller.
+ * Abstract controller for the main API controller to extend.
  *
  * @license http://www.opensource.org/licenses/mit-license.php MIT
  * @author Ando Roots <ando@sqroot.eu>
@@ -8,7 +8,7 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-abstract class Kohana_Controller_HAPI_Provider extends Controller
+abstract class Kohana_Controller_HAPI extends Controller
 {
 
 	/**
@@ -42,15 +42,20 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		return $this->_version;
 	}
 
+	/**
+	 * @throws HTTP_Exception_401
+	 * @since 1.0
+	 */
 	public function before()
 	{
 		parent::before();
 
 		// Check request signature
-		if (! $this->check_auth()) {
-			throw HTTP_Exception::factory(401, 'Request signature was invalid')
-				->authenticate($this->request->headers('X-Auth'))
-				->request($this->request);
+		if (! HAPI_Security::is_request_valid($this->request)) {
+			$http_401 = new HTTP_Exception_401('Request signature was invalid');
+			$http_401->request($this->request);
+			$http_401->headers('www-authenticate', 'Digest'); // Todo
+			throw $http_401;
 		}
 
 		// Instantiate the encoder object for the response (based on the Accept header)
@@ -58,10 +63,20 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 
 		// Extract version string from the Accept header
 		$this->_version = $this->_parse_version($this->response_encoder->content_type());
+
+		// Set current language
+		$supported_languages = Kohana::$config->load('hapi.supported_languages');
+		$preferred_language = $this->request->headers()->preferred_language($supported_languages);
+
+		if ($preferred_language) {
+			I18n::lang($preferred_language);
+		}
 	}
 
 	/**
-	 * Executes the current controller, considering the HTTP verb
+	 * Executes the current controller.
+	 *
+	 * Action takes into account the HTTP verb
 	 *
 	 * @return Response
 	 * @throws HTTP_Exception_404
@@ -110,6 +125,7 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 				array(':uri' => $this->request->uri())
 			);
 		}
+
 		return $action;
 	}
 
@@ -120,6 +136,10 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	{
 		// Set the response body - ask HAPI encoder to transform its data into string
 		$this->response->body($this->response_encoder->encode());
+
+		// For AJAX queries
+		$this->response->headers('Access-Control-Allow-Origin', Kohana::$config->load('hapi.allow_origin'));
+
 		parent::after();
 	}
 
@@ -206,22 +226,4 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
 	}
 
-	/**
-	 * @return bool
-	 * @since 1.0
-	 */
-	public function check_auth()
-	{
-		$public_key = $this->request->headers('X-Auth');
-		$private_key = Kohana::$config->load('hapi.keys.'.$public_key);
-
-		if ($private_key === NULL) {
-			return FALSE;
-		}
-
-		$provided_request_signature = $this->request->headers('X-Auth-Hash');
-		$expected_request_signature = HAPI_Request::calculate_hmac($this->request, $private_key);
-
-		return $expected_request_signature === $provided_request_signature;
-	}
 }

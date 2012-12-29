@@ -8,9 +8,8 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-abstract class Kohana_Controller_HAPI_ORM_Provider extends Kohana_Controller_HAPI_Provider
+abstract class Kohana_Controller_HAPI_ORM extends Kohana_Controller_HAPI
 {
-
 
 	/**
 	 * TRUE - use only get() method for GET requests

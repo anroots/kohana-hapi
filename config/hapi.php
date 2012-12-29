@@ -9,13 +9,21 @@
 return [
 
 	/**
+	 * @since 1.0
+	 */
+	'allow_origin'        => 'http://fanapp.local/',
+	/**
+	 * A list of language codes that are supported by the API
+	 */
+	'supported_languages' => ['et', 'en'],
+	/**
 	 * List of supported HAPI response encoders.
 	 *
 	 * Keys are HTTP MIME types, values class names in HAPI/Response directory
 	 *
 	 * @since 1.0
 	 */
-	'encoders' => [
+	'encoders'            => [
 		'application/json'               => 'JSON',
 		'application/vnd.no99-v1.0+json' => 'JSON'
 	],
@@ -24,13 +32,13 @@ return [
 	 *
 	 * @since 1.0
 	 */
-	'keys'     => [
+	'keys'                => [
 		'FYjrCuOj5nORuRZXTe70P4mYjnFoTjgG' => 'l6M5LLJpAEL9F1tuE5mDEyODTNK6P2kS'
 	],
 	/**
 	 * @since 1.0
 	 */
-	'request'  => [
+	'request'             => [
 		/**
 		 * @since 1.0
 		 */
@@ -39,7 +47,6 @@ return [
 				'public_key'  => 'FYjrCuOj5nORuRZXTe70P4mYjnFoTjgG',
 				'private_key' => 'l6M5LLJpAEL9F1tuE5mDEyODTNK6P2kS'
 			],
-
 			'test'    => [
 				'public_key'  => 'FYjrCuOj5nORuRZXTe70P4mYjnfrTjgG',
 				'private_key' => '36M5LLJpAEL9F1tdc5mDEyODTNK6P2kS'
