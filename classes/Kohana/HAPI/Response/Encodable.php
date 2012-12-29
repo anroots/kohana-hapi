@@ -21,7 +21,7 @@ interface Kohana_HAPI_Response_Encodable
 	 * @param array $data
 	 * @since 1.0
 	 */
-	public function set_data(array $data);
+	public function set_data($data);
 
 	/**
 	 * @return string

@@ -12,28 +12,31 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 {
 
 	/**
+	 * API version to use when the Accept header does not contain a version
+	 *
 	 * @since 1.0
 	 */
 	const DEFAULT_API_VERSION = '1.0';
 
 	/**
-	 * @var HAPI_Response
+	 * Instance of a Response_Encoder class whose purpose is to
+	 * hold the response body data and transform it into the appropriate format (JSON, XML)
+	 *
+	 * @var HAPI_Response_Encoder
 	 * @since 1.0
 	 */
-	public $hapi_response;
+	public $response_encoder;
 
 	/**
-	 * @var bool
+	 * @var string Version string, as specified by the Accept HTTP header
 	 * @since 1.0
-	 */
-	protected $_use_uniform_get = TRUE;
-
-	/**
-	 * @var string
 	 */
 	private $_version;
 
-
+	/**
+	 * @return string
+	 * @since 1.0
+	 */
 	public function get_version()
 	{
 		return $this->_version;
@@ -44,13 +47,14 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		parent::before();
 
 		// Instantiate the encoder object for the response (based on the Accept header)
-		$this->hapi_response = $this->_get_response_encoder();
+		$this->response_encoder = $this->_get_response_encoder();
 
-		$this->_version = $this->_parse_version($this->hapi_response->content_type());
+		// Extract version string from the Accept header
+		$this->_version = $this->_parse_version($this->response_encoder->content_type());
 	}
 
 	/**
-	 * Executes the current action, considering the HTTP verb
+	 * Executes the current controller, considering the HTTP verb
 	 *
 	 * @return Response
 	 * @throws HTTP_Exception_404
@@ -90,8 +94,6 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 		// Action (if not default) is appended to the HTTP verb
 		if ($this->request->action() !== Route::$default_action) {
 			$action .= '_'.$this->request->action();
-		} elseif (! $this->_use_uniform_get) {
-			$action .= $this->request->param('id') === NULL ? '_all' : '_one';
 		}
 
 		// If the action doesn't exist, it's a 404
@@ -110,20 +112,20 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	public function after()
 	{
 		// Set the response body - ask HAPI encoder to transform its data into string
-		$this->response->body($this->hapi_response->encode());
+		$this->response->body($this->response_encoder->encode());
 		parent::after();
 	}
 
 	/**
-	 * Shorthand
+	 * Shorthand for setting the response data from the controller
 	 *
 	 * @since 1.0
 	 * @param array $data
 	 * @return Kohana_Controller_HAPI_Provider
 	 */
-	public function hapi(array $data)
+	public function hapi($data)
 	{
-		$this->hapi_response->set_data($data);
+		$this->response_encoder->set_data($data);
 		return $this;
 	}
 

@@ -177,8 +177,7 @@ class Kohana_HAPI_Request extends Request
 		$this->headers('X-Auth', $this->hapi_profile_settings['public_key']);
 		$this->headers('X-Auth-Hash', $signature);
 
-		$response = parent::execute();
-return $response;
+		return parent::execute();
 	}
 
 	/**
