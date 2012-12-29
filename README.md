@@ -24,3 +24,5 @@ The purpose of this module is to provide an easy framework for API-based develop
 * Remove some of the hardcoded values to support not only JSON
 * Document code, wiki, gh-pages
 * Improve architecture
+* Improve API semantics: provide meaningful error and status messages in response body
+* Work towards achieving REST

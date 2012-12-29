@@ -173,49 +173,38 @@ class Kohana_HAPI_Request extends Request
 		}
 
 		// Add signature to the request
-		$signature = $this->calculate_hmac();
+		$signature = self::calculate_hmac($this, $this->hapi_profile_settings['private_key']);
 		$this->headers('X-Auth', $this->hapi_profile_settings['public_key']);
 		$this->headers('X-Auth-Hash', $signature);
-
 		return parent::execute();
 	}
 
 	/**
-	 *
-	 * @return stdClass
-	 * @since 1.0
-	 */
-	public function decode()
-	{
-		return $this->status() === 200 ? json_decode($this->body()) : $this->body();
-	}
-
-	/**
-	 * Calculate the signature of the current request.
+	 * Calculate the signature of a request.
 	 * Should be called just before the request is sent.
 	 *
+	 * @param Request $request
+	 * @param $private_key
 	 * @return string Calculated HMAC
 	 */
-	public function calculate_hmac()
+	public static function calculate_hmac(Request $request, $private_key)
 	{
 		// Consolidate data that's not in the main route (params)
-		$query = array_change_key_case($this->query());
-		$post = array_change_key_case($this->post());
+		$query = array_change_key_case($request->query());
+		$post = array_change_key_case($request->post());
 
 		// Sort alphabetically
 		ksort($query);
 		ksort($post);
 
 		$data_to_sign = [
-			'method' => $this->method(),
-			'uri'    => $this->uri(),
+			'method' => $request->method(),
+			'uri'    => $request->uri(),
 			'post'   => $post,
 			'query'  => $query,
 		];
 
 		// Calculate the signature
-		$signature = hash_hmac('sha256', json_encode($data_to_sign), $this->hapi_profile_settings['private_key']);
-
-		return $signature;
+		return hash_hmac('sha256', json_encode($data_to_sign), $private_key);
 	}
 }

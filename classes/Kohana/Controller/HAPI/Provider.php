@@ -46,6 +46,13 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	{
 		parent::before();
 
+		// Check request signature
+		if (! $this->check_auth()) {
+			throw HTTP_Exception::factory(401, 'Request signature was invalid')
+				->authenticate($this->request->headers('X-Auth'))
+				->request($this->request);
+		}
+
 		// Instantiate the encoder object for the response (based on the Accept header)
 		$this->response_encoder = $this->_get_response_encoder();
 
@@ -197,5 +204,24 @@ abstract class Kohana_Controller_HAPI_Provider extends Controller
 	{
 		preg_match('/-v(.*)\+/', $content_type, $matches);
 		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
+	}
+
+	/**
+	 * @return bool
+	 * @since 1.0
+	 */
+	public function check_auth()
+	{
+		$public_key = $this->request->headers('X-Auth');
+		$private_key = Kohana::$config->load('hapi.keys.'.$public_key);
+
+		if ($private_key === NULL) {
+			return FALSE;
+		}
+
+		$provided_request_signature = $this->request->headers('X-Auth-Hash');
+		$expected_request_signature = HAPI_Request::calculate_hmac($this->request, $private_key);
+
+		return $expected_request_signature === $provided_request_signature;
 	}
 }
