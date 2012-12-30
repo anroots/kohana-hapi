@@ -35,11 +35,13 @@ abstract class Kohana_Controller_HAPI_ORM extends Kohana_Controller_HAPI
 	{
 		parent::before();
 
-		if ($this->_orm_name === NULL) {
+		if ($this->_orm_name === NULL)
+		{
 			$this->_orm_name = $this->_get_orm_name();
 		}
 
-		if ($this->_orm === NULL && class_exists('Model_'.$this->_orm_name)) {
+		if ($this->_orm === NULL && class_exists('Model_'.$this->_orm_name))
+		{
 			$this->_orm = ORM::factory($this->_orm_name, $this->request->param('id'));
 		}
 	}
@@ -58,14 +60,17 @@ abstract class Kohana_Controller_HAPI_ORM extends Kohana_Controller_HAPI
 		$action = strtolower($this->request->method());
 
 		// Action (if not default) is appended to the HTTP verb
-		if ($this->request->action() !== Route::$default_action) {
+		if ($this->request->action() !== Route::$default_action)
+		{
 			$action .= '_'.$this->request->action();
-		} elseif (! $this->_use_uniform_get) {
+		} elseif (! $this->_use_uniform_get and $this->request->method() === HTTP_Request::GET)
+		{
 			$action .= $this->request->param('id') === NULL ? '_all' : '_one';
 		}
 
 		// If the action doesn't exist, it's a 404
-		if (! method_exists($this, $action)) {
+		if (! method_exists($this, $action))
+		{
 			throw new HTTP_Exception_404(
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())

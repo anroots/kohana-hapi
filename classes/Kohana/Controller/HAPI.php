@@ -129,7 +129,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$action = strtolower($this->request->method());
 
 		// Action (if not default) is appended to the HTTP verb
-		if ($this->request->action() !== Route::$default_action)
+		if ($this->request->action() !== Route::$default_action )
 		{
 			$action .= '_'.$this->request->action();
 		}
