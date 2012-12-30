@@ -34,6 +34,12 @@ abstract class Kohana_Controller_HAPI extends Controller
 	private $_version;
 
 	/**
+	 * @since 1.0
+	 * @var bool
+	 */
+	protected $_include_metadata = TRUE;
+
+	/**
 	 * @return string
 	 * @since 1.0
 	 */
@@ -51,12 +57,15 @@ abstract class Kohana_Controller_HAPI extends Controller
 		parent::before();
 
 		// Check request signature
-		if (! HAPI_Security::is_request_valid($this->request)) {
+		if (! HAPI_Security::is_request_valid($this->request))
+		{
 			$http_401 = new HTTP_Exception_401('Request signature was invalid');
 			$http_401->request($this->request);
 			$http_401->headers('www-authenticate', 'Digest'); // Todo
 			throw $http_401;
 		}
+
+		$this->_include_metadata = Kohana::$config->load('hapi.include_metadata');
 
 		// Instantiate the encoder object for the response (based on the Accept header)
 		$this->response_encoder = $this->_get_response_encoder();
@@ -68,7 +77,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$supported_languages = Kohana::$config->load('hapi.supported_languages');
 		$preferred_language = $this->request->headers()->preferred_language($supported_languages);
 
-		if ($preferred_language) {
+		if ($preferred_language)
+		{
 			I18n::lang($preferred_language);
 		}
 	}
@@ -114,12 +124,14 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$action = strtolower($this->request->method());
 
 		// Action (if not default) is appended to the HTTP verb
-		if ($this->request->action() !== Route::$default_action) {
+		if ($this->request->action() !== Route::$default_action)
+		{
 			$action .= '_'.$this->request->action();
 		}
 
 		// If the action doesn't exist, it's a 404
-		if (! method_exists($this, $action)) {
+		if (! method_exists($this, $action))
+		{
 			throw new HTTP_Exception_404(
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())
@@ -152,7 +164,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public function hapi($data)
 	{
-		$this->response_encoder->set_data($data);
+		$this->response_encoder->add_data($data);
 		return $this;
 	}
 
@@ -176,7 +188,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$preferred_response_mime = $this->request->headers()
 			->preferred_accept(array_keys($supported_encoders));
 
-		if (! $preferred_response_mime) {
+		if (! $preferred_response_mime)
+		{
 			throw new HTTP_Exception_406;
 		}
 
@@ -184,7 +197,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$encoder_to_use = $supported_encoders[$preferred_response_mime];
 
 		// Encoder class not found
-		if (! class_exists($prefix.$encoder_to_use)) {
+		if (! class_exists($prefix.$encoder_to_use))
+		{
 			throw new Kohana_Exception('Encoder for MIME type ":type" is configured, but no class found.', [
 				':type' => $preferred_response_mime
 			]);
@@ -192,7 +206,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 
 		$class = new ReflectionClass($prefix.$encoder_to_use);
 
-		if ($class->isAbstract() || ! $class->implementsInterface('HAPI_Response_Encodable')) {
+		if ($class->isAbstract() || ! $class->implementsInterface('HAPI_Response_Encodable'))
+		{
 			throw new Kohana_Exception(
 				'Response encoder - :class - must be a concrete class that implements HAPI_Response_Encodable',
 				array(':class' => $prefix.$encoder_to_use)
@@ -200,12 +215,18 @@ abstract class Kohana_Controller_HAPI extends Controller
 		}
 
 		// Instantiate the encoder
-		$hapi_response = $class->newInstance($this->request, $this->response, $preferred_response_mime);
+		$hapi_encoder = $class->newInstance($this->request, $this->response, $preferred_response_mime);
 
 		// Set response content type
-		$this->response->headers('Content-Type', $hapi_response->content_type());
+		$this->response->headers('Content-Type', $hapi_encoder->content_type());
 
-		return $hapi_response;
+		// Add metadata to the response such as response generation time
+		if ($this->_include_metadata)
+		{
+			$hapi_encoder->add_data($this->get_metadata());
+		}
+
+		return $hapi_encoder;
 	}
 
 	/**
@@ -224,6 +245,13 @@ abstract class Kohana_Controller_HAPI extends Controller
 	{
 		preg_match('/-v(.*)\+/', $content_type, $matches);
 		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
+	}
+
+	public function get_metadata()
+	{
+		return [
+			'generated' => time()
+		];
 	}
 
 }

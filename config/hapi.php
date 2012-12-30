@@ -17,6 +17,12 @@ return [
 	 */
 	'require_signature'   => Kohana::$environment === Kohana::PRODUCTION,
 	/**
+	 * Automatically include request meta-data in the HAPI response
+	 * Example: response generation time
+	 * @since 1.0
+	 */
+	'include_metadata'    => TRUE,
+	/**
 	 * @since 1.0
 	 */
 	'allow_origin'        => 'http://fanapp.local/',

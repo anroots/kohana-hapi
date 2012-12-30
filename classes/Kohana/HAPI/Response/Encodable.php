@@ -18,10 +18,22 @@ interface Kohana_HAPI_Response_Encodable
 	public function content_type();
 
 	/**
+	 * Sets the response data, overriding the previous value
+	 *
 	 * @param array $data
 	 * @since 1.0
+	 * @return HAPI_Response_Encodable
 	 */
 	public function set_data($data);
+
+	/**
+	 * Append to the response data
+	 *
+	 * @since 1.0
+	 * @param $data
+	 * @return HAPI_Response_Encodable
+	 */
+	public function add_data($data);
 
 	/**
 	 * @return string

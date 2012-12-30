@@ -57,11 +57,13 @@ abstract class Kohana_HAPI_Response_Encoder
 
 	/**
 	 * @param array $data
+	 * @return \Kohana_HAPI_Response_Encoder
 	 * @since 1.0
 	 */
 	public function set_data($data)
 	{
 		$this->_data = $data;
+		return $this;
 	}
 
 	/**
