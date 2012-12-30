@@ -252,11 +252,16 @@ abstract class Kohana_Controller_HAPI extends Controller
 		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
 	}
 
+	/**
+	 * @return array
+	 * @since 1.0
+	 */
 	public function get_metadata()
 	{
+		$protocol = $this->request->secure() ? 'https' : 'http';
 		return [
 			'generated'   => time(),
-			'self'        => $this->base_url(),
+			'self'        => URL::base($protocol).$this->request->uri(),
 			'api_version' => $this->get_api_version()
 		];
 	}
@@ -268,15 +273,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public function get_api_version()
 	{
 		return self::CURRENT_API_VERSION;
-	}
-
-	/**
-	 * @return string
-	 * @since 1.0
-	 */
-	public function base_url()
-	{
-		return URL::base().'api/';
 	}
 
 }
