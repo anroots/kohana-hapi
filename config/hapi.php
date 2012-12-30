@@ -9,6 +9,14 @@
 return [
 
 	/**
+	 * Set to FALSE to disable signature checks.
+	 * This allows processing of unsigned requests, useful in development
+	 * mode (when using external client to manually build queries)
+	 *
+	 * @since 1.0
+	 */
+	'require_signature'   => Kohana::$environment === Kohana::PRODUCTION,
+	/**
 	 * @since 1.0
 	 */
 	'allow_origin'        => 'http://fanapp.local/',

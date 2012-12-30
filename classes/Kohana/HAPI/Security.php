@@ -6,7 +6,8 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-class Kohana_HAPI_Security {
+class Kohana_HAPI_Security
+{
 
 	/**
 	 * @param Request $request
@@ -15,6 +16,11 @@ class Kohana_HAPI_Security {
 	 */
 	public static function is_request_valid(Request $request)
 	{
+		// Signature checks can be disabled
+		if (!Kohana::$config->load('hapi.require_signature')) {
+			return TRUE;
+		}
+
 		$public_key = $request->headers('X-Auth');
 		$private_key = Arr::get(Kohana::$config->load('hapi.keys'), $public_key);
 
