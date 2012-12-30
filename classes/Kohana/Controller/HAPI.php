@@ -19,6 +19,11 @@ abstract class Kohana_Controller_HAPI extends Controller
 	const DEFAULT_API_VERSION = '1.0';
 
 	/**
+	 * @since 1.0
+	 */
+	const CURRENT_API_VERSION = '1.0';
+
+	/**
 	 * Instance of a Response_Encoder class whose purpose is to
 	 * hold the response body data and transform it into the appropriate format (JSON, XML)
 	 *
@@ -250,8 +255,28 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public function get_metadata()
 	{
 		return [
-			'generated' => time()
+			'generated'   => time(),
+			'self'        => $this->base_url(),
+			'api_version' => $this->get_api_version()
 		];
+	}
+
+	/**
+	 * @return string
+	 * @since 1.0
+	 */
+	public function get_api_version()
+	{
+		return self::CURRENT_API_VERSION;
+	}
+
+	/**
+	 * @return string
+	 * @since 1.0
+	 */
+	public function base_url()
+	{
+		return URL::base().'api/';
 	}
 
 }
