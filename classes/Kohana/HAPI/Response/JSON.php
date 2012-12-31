@@ -26,7 +26,7 @@ class Kohana_HAPI_Response_JSON extends Kohana_HAPI_Response_Encoder implements 
 			return $this->set_data($data);
 		}
 
-		$this->_data = array_replace($this->_data, $data);
+		$this->_data = array_replace_recursive($this->_data, $data);
 		return $this;
 	}
 }
