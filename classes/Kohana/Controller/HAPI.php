@@ -106,13 +106,35 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$action = $this->_determine_action();
 
 		// Execute the method itself
-		$this->{$action}();
-
+		if ($this->request->method() === HTTP_Request::PUT)
+		{
+			$this->{$action}($this->_put_data());
+		} else
+		{
+			$this->{$action}();
+		}
 		// Execute the "after action" method
 		$this->after();
 
 		// Return the response
 		return $this->response;
+	}
+
+	/**
+	 * Extract PUT data into an array.
+	 *
+	 * @since 1.0
+	 * @return array
+	 */
+	private function _put_data()
+	{
+		$put_data = [];
+		foreach (explode('&', $this->request->body()) as $chunk)
+		{
+			$param = explode("=", $chunk);
+			$put_data[urldecode($param[0])] = urldecode($param[1]);
+		}
+		return $put_data;
 	}
 
 	/**
@@ -129,7 +151,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$action = strtolower($this->request->method());
 
 		// Action (if not default) is appended to the HTTP verb
-		if ($this->request->action() !== Route::$default_action )
+		if ($this->request->action() !== Route::$default_action)
 		{
 			$action .= '_'.$this->request->action();
 		}
