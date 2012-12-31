@@ -30,6 +30,27 @@ class Kohana_HAPI_Request extends Request
 	}
 
 	/**
+	 * Change the request method to PUT and add body data.
+	 *
+	 * @since 1.0
+	 * @param array|null $put_data Array of data to include as the request body
+	 * @return mixed
+	 */
+	public function put(array $put_data = NULL)
+	{
+
+		// Use data already saved to POST
+		if ($put_data === NULL)
+		{
+			$put_data = $this->post();
+		}
+
+		return $this->method(HTTP_Request::PUT)
+			->headers('Content-Type', 'application/x-www-form-urlencoded')
+			->body(http_build_query($put_data));
+	}
+
+	/**
 	 * @param string $uri
 	 * @param array $client_params
 	 * @param bool $allow_external
@@ -40,37 +61,46 @@ class Kohana_HAPI_Request extends Request
 	public static function factory($uri = '', $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
 		// If this is the initial request
-		if (! Request::$initial) {
-			if (isset($_SERVER['SERVER_PROTOCOL'])) {
+		if (! Request::$initial)
+		{
+			if (isset($_SERVER['SERVER_PROTOCOL']))
+			{
 				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			} else {
+			} else
+			{
 				$protocol = HTTP::$protocol;
 			}
 
-			if (isset($_SERVER['REQUEST_METHOD'])) {
+			if (isset($_SERVER['REQUEST_METHOD']))
+			{
 				// Use the server request method
 				$method = $_SERVER['REQUEST_METHOD'];
-			} else {
+			} else
+			{
 				// Default to GET requests
 				$method = HTTP_Request::GET;
 			}
 
-			if (! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN)) {
+			if (! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			{
 				// This request is secure
 				$secure = TRUE;
 			}
 
-			if (isset($_SERVER['HTTP_REFERER'])) {
+			if (isset($_SERVER['HTTP_REFERER']))
+			{
 				// There is a referrer for this request
 				$referrer = $_SERVER['HTTP_REFERER'];
 			}
 
-			if (isset($_SERVER['HTTP_USER_AGENT'])) {
+			if (isset($_SERVER['HTTP_USER_AGENT']))
+			{
 				// Browser type
 				Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 			}
 
-			if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+			if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
+			{
 				// Typically used to denote AJAX requests
 				$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
 			}
@@ -78,7 +108,8 @@ class Kohana_HAPI_Request extends Request
 			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
 				AND isset($_SERVER['REMOTE_ADDR'])
 					AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies)
-			) {
+			)
+			{
 				// Use the forwarded IP address, typically set when the
 				// client is using a proxy server.
 				// Format: "X-Forwarded-For: client1, proxy1, proxy2"
@@ -90,7 +121,8 @@ class Kohana_HAPI_Request extends Request
 			} elseif (isset($_SERVER['HTTP_CLIENT_IP'])
 				AND isset($_SERVER['REMOTE_ADDR'])
 					AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies)
-			) {
+			)
+			{
 				// Use the forwarded IP address, typically set when the
 				// client is using a proxy server.
 				$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
@@ -98,20 +130,24 @@ class Kohana_HAPI_Request extends Request
 				Request::$client_ip = array_shift($client_ips);
 
 				unset($client_ips);
-			} elseif (isset($_SERVER['REMOTE_ADDR'])) {
+			} elseif (isset($_SERVER['REMOTE_ADDR']))
+			{
 				// The remote IP address
 				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if ($method !== HTTP_Request::GET) {
+			if ($method !== HTTP_Request::GET)
+			{
 				// Ensure the raw body is saved for future use
 				$body = file_get_contents('php://input');
 			}
 
 			$cookies = array();
 
-			if (($cookie_keys = array_keys($_COOKIE))) {
-				foreach ($cookie_keys as $key) {
+			if (($cookie_keys = array_keys($_COOKIE)))
+			{
+				foreach ($cookie_keys as $key)
+				{
 					$cookies[$key] = Cookie::get($key);
 				}
 			}
@@ -124,35 +160,42 @@ class Kohana_HAPI_Request extends Request
 				->query($_GET)
 				->post($_POST);
 
-			if (isset($secure)) {
+			if (isset($secure))
+			{
 				// Set the request security
 				$request->secure($secure);
 			}
 
-			if (isset($method)) {
+			if (isset($method))
+			{
 				// Set the request method
 				$request->method($method);
 			}
 
-			if (isset($referrer)) {
+			if (isset($referrer))
+			{
 				// Set the referrer
 				$request->referrer($referrer);
 			}
 
-			if (isset($requested_with)) {
+			if (isset($requested_with))
+			{
 				// Apply the requested with variable
 				$request->requested_with($requested_with);
 			}
 
-			if (isset($body)) {
+			if (isset($body))
+			{
 				// Set the request body (probably a PUT type)
 				$request->body($body);
 			}
 
-			if (isset($cookies)) {
+			if (isset($cookies))
+			{
 				$request->cookie($cookies);
 			}
-		} else {
+		} else
+		{
 			$request = new HAPI_Request($uri, $client_params, $allow_external, $injected_routes);
 		}
 		return $request;
@@ -168,7 +211,8 @@ class Kohana_HAPI_Request extends Request
 		// Timestamp for avoiding identical signatures
 		$this->query('ts', (string) time());
 
-		if ($this->hapi_profile_settings === NULL) {
+		if ($this->hapi_profile_settings === NULL)
+		{
 			$this->load_config();
 		}
 
