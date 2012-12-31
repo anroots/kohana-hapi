@@ -108,7 +108,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		// Execute the method itself
 		if ($this->request->method() === HTTP_Request::PUT)
 		{
-			$this->{$action}($this->_put_data());
+			$this->{$action}($this->_extract_put_data($this->request->body()));
 		} else
 		{
 			$this->{$action}();
@@ -124,16 +124,12 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 * Extract PUT data into an array.
 	 *
 	 * @since 1.0
+	 * @param $request_body
 	 * @return array
 	 */
-	private function _put_data()
+	private function _extract_put_data($request_body)
 	{
-		$put_data = [];
-		foreach (explode('&', $this->request->body()) as $chunk)
-		{
-			$param = explode("=", $chunk);
-			$put_data[urldecode($param[0])] = urldecode($param[1]);
-		}
+		parse_str($request_body, $put_data);
 		return $put_data;
 	}
 
