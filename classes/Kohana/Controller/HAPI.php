@@ -40,6 +40,12 @@ abstract class Kohana_Controller_HAPI extends Controller
 
 	/**
 	 * @since 1.0
+	 * @var string API base URL
+	 */
+	protected $_base_url;
+
+	/**
+	 * @since 1.0
 	 * @var bool
 	 */
 	protected $_include_metadata = TRUE;
@@ -51,6 +57,17 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public function get_version()
 	{
 		return $this->_version;
+	}
+
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @since 1.0
+	 */
+	public function __construct(Request $request, Response $response)
+	{
+		parent::__construct($request, $response);
+		$this->_base_url = URL::base('http').'api/';
 	}
 
 	/**
@@ -279,7 +296,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$protocol = $this->request->secure() ? 'https' : 'http';
 		return [
 			'generated'   => time(),
-			'self'        => URL::base($protocol).$this->request->uri(),
+			'links'       => ['self' => URL::base($protocol).$this->request->uri()],
 			'api_version' => $this->get_api_version()
 		];
 	}
@@ -293,4 +310,18 @@ abstract class Kohana_Controller_HAPI extends Controller
 		return self::CURRENT_API_VERSION;
 	}
 
+	/**
+	 * @param null $url
+	 * @return Kohana_Controller_HAPI|string
+	 * @since 1.0
+	 */
+	public function base($url = NULL)
+	{
+		if ($url === NULL)
+		{
+			return $this->_base_url;
+		}
+		$this->_base_url = $url;
+		return $this;
+	}
 }

@@ -8,7 +8,7 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-abstract class Kohana_Controller_HAPI_ORM extends Kohana_Controller_HAPI
+abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 {
 
 	/**
