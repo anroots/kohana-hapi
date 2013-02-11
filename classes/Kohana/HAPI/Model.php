@@ -16,7 +16,7 @@ abstract class Kohana_HAPI_Model
 	 */
 	public static function factory(ORM $orm)
 	{
-		$class =get_class($orm);
+		$class = get_class($orm);
 		$class = preg_replace('/Model/', 'HAPI_Model', $class, 1);
 		return new $class($orm);
 	}
