@@ -12,16 +12,9 @@ abstract class Kohana_Controller_HAPI extends Controller
 {
 
 	/**
-	 * API version to use when the Accept header does not contain a version
-	 *
-	 * @since 1.0
+	 * @var string Current API version. Might be different between Controller instances.
 	 */
-	const DEFAULT_API_VERSION = '1.0';
-
-	/**
-	 * @since 1.0
-	 */
-	const CURRENT_API_VERSION = '1.0';
+	protected $_api_version = '1.0';
 
 	/**
 	 * Instance of a Response_Encoder class whose purpose is to
@@ -36,7 +29,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 * @var string Version string, as specified by the Accept HTTP header
 	 * @since 1.0
 	 */
-	private $_version;
+	private $_requested_version;
 
 	/**
 	 * @since 1.0
@@ -54,9 +47,9 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 * @return string
 	 * @since 1.0
 	 */
-	public function get_version()
+	public function get_requested_version()
 	{
-		return $this->_version;
+		return $this->_requested_version;
 	}
 
 	/**
@@ -79,7 +72,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 		parent::before();
 
 		// Check request signature
-		if (! HAPI_Security::is_request_valid($this->request))
+		if (Kohana::$config->load('hapi.require_signature')
+			&&! HAPI_Security::is_request_signature_valid($this->request))
 		{
 			$http_401 = new HTTP_Exception_401('Request signature was invalid');
 			$http_401->request($this->request);
@@ -87,7 +81,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 			throw $http_401;
 		}
 
-		if (Kohana::$config->load('hapi.require_login') && ! HAPI_Security::is_request_authenticated($this->request))
+		if (Kohana::$config->load('hapi.require_login')
+			&& ! HAPI_Security::is_request_authenticated($this->request))
 		{
 			$http_401 = new HTTP_Exception_401('Login required');
 			$http_401->request($this->request);
@@ -100,7 +95,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$this->response_encoder = $this->_get_response_encoder();
 
 		// Extract version string from the Accept header
-		$this->_version = $this->_parse_version($this->response_encoder->content_type());
+		$this->_requested_version = $this->_parse_version($this->response_encoder->content_type());
 
 		// Set current language
 		$supported_languages = Kohana::$config->load('hapi.supported_languages');
@@ -291,7 +286,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	private function _parse_version($content_type)
 	{
 		preg_match('/-v(.*)\+/', $content_type, $matches);
-		return count($matches) === 2 ? $matches[1] : self::DEFAULT_API_VERSION;
+		return count($matches) === 2 ? $matches[1] : Kohana::$config->load('hapi.default_version');
 	}
 
 	/**
@@ -314,7 +309,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public function get_api_version()
 	{
-		return self::CURRENT_API_VERSION;
+		return $this->_api_version;
 	}
 
 	/**

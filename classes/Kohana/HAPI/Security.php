@@ -16,6 +16,8 @@ class Kohana_HAPI_Security
 	 */
 	public static function is_request_authenticated(Request $request)
 	{
+		// User is authenticated automatically on most AJAX calls.
+		// Session cookie is transmitted with the request
 		$user = Auth::instance()->get_user();
 		return $user->loaded();
 	}
@@ -25,13 +27,8 @@ class Kohana_HAPI_Security
 	 * @return bool
 	 * @since 1.0
 	 */
-	public static function is_request_valid(Request $request)
+	public static function is_request_signature_valid(Request $request)
 	{
-		// Signature checks can be disabled
-		if (! Kohana::$config->load('hapi.require_signature'))
-		{
-			return TRUE;
-		}
 
 		$public_key = $request->headers('X-Auth');
 		$private_key = Arr::get(Kohana::$config->load('hapi.keys'), $public_key);
