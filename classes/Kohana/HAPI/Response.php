@@ -20,4 +20,14 @@ class Kohana_HAPI_Response
 	{
 		return json_decode($response->body());
 	}
+
+	public static function from_query(Database_Result $result)
+	{
+		$data = [];
+		foreach ($result as $row)
+		{
+			$data[] = $row->as_hapi_data();
+		}
+		return $data;
+	}
 }

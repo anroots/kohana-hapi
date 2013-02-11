@@ -28,4 +28,18 @@ abstract class Kohana_HAPI_Model
 	{
 		return $this->_orm->as_array();
 	}
+
+	public function get_metadata()
+	{
+		$metadata = [];
+		$meta_columns = ['created', 'updated', 'deleted'];
+		foreach ($meta_columns as $column_name)
+		{
+			if (isset($this->_orm->{$column_name}))
+			{
+				$metadata[$column_name] = $this->_orm->{$column_name};
+			}
+		}
+		return $metadata;
+	}
 }
