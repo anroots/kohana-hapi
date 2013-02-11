@@ -8,6 +8,8 @@
  */
 return [
 
+	'require_login'       => TRUE,
+
 	/**
 	 * Set to FALSE to disable signature checks.
 	 * This allows processing of unsigned requests, useful in development
@@ -19,6 +21,7 @@ return [
 	/**
 	 * Automatically include request meta-data in the HAPI response
 	 * Example: response generation time
+	 *
 	 * @since 1.0
 	 */
 	'include_metadata'    => TRUE,

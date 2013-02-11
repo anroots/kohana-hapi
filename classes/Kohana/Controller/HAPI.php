@@ -87,6 +87,13 @@ abstract class Kohana_Controller_HAPI extends Controller
 			throw $http_401;
 		}
 
+		if (Kohana::$config->load('hapi.require_login') && ! HAPI_Security::is_request_authenticated($this->request))
+		{
+			$http_401 = new HTTP_Exception_401('Login required');
+			$http_401->request($this->request);
+			throw $http_401;
+		}
+
 		$this->_include_metadata = Kohana::$config->load('hapi.include_metadata');
 
 		// Instantiate the encoder object for the response (based on the Accept header)

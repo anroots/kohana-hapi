@@ -10,6 +10,17 @@ class Kohana_HAPI_Security
 {
 
 	/**
+	 * //todo: when session cookie is omitted try to login with basic auth
+	 * @param Request $request
+	 * @return bool
+	 */
+	public static function is_request_authenticated(Request $request)
+	{
+		$user = Auth::instance()->get_user();
+		return $user->loaded();
+	}
+
+	/**
 	 * @param Request $request
 	 * @return bool
 	 * @since 1.0
@@ -17,19 +28,22 @@ class Kohana_HAPI_Security
 	public static function is_request_valid(Request $request)
 	{
 		// Signature checks can be disabled
-		if (!Kohana::$config->load('hapi.require_signature')) {
+		if (! Kohana::$config->load('hapi.require_signature'))
+		{
 			return TRUE;
 		}
 
 		$public_key = $request->headers('X-Auth');
 		$private_key = Arr::get(Kohana::$config->load('hapi.keys'), $public_key);
 
-		if (! $public_key or ! $private_key) {
+		if (! $public_key or ! $private_key)
+		{
 			return FALSE;
 		}
 
 		$provided_request_signature = $request->headers('X-Auth-Hash');
 		$expected_request_signature = self::calculate_hmac($request, $private_key);
+
 
 		return $expected_request_signature === $provided_request_signature;
 	}
