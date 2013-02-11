@@ -19,6 +19,37 @@ The purpose of this module is to provide an easy framework for API-based develop
 * Scalable and optimized - mean for one server, one client approach where client is under vendor control
 * Tested
 
+# Installation
+
+* Clone and enable the module. Use a git submodule, download the zip or add a Composer dependency
+* Add a route to the API controller:
+
+```php
+<?php
+Route::set(
+	'api',
+	'api(/<controller>(/<id>(/<action>)))'
+)
+	->defaults(
+	array(
+		'directory'  => 'API/V1/',
+		'controller' => 'About',
+		'action'     => 'index'
+	)
+);
+```
+
+* Create `APPPATH/classes/Controller/API/V1/Main.php` - extends `Controller_HAPI`
+* Create `APPPATH/classes/Controller/API/V1/About.php` - extends `Controller_API_V1_Main`
+* In the `action_index`, write:
+
+```php
+<?php
+$this->hapi(['about' => 'Hello, world']);
+```
+
+* Make a HTTP GET query to `BASE_URL/api/v1/about
+
 # TODO
 
 * Remove some of the hardcoded values to support not only JSON
