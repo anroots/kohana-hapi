@@ -82,6 +82,11 @@ abstract class Kohana_Controller_HAPI extends Controller
 			throw $http_401;
 		}
 
+		if (Kohana::$config->load('hapi.development_mode'))
+		{
+			$this->_autologin($this->request->query('_hapi_login'));
+		}
+
 		if (Kohana::$config->load('hapi.require_login')
 			&& ! HAPI_Security::is_request_authenticated($this->request)
 		)
@@ -327,6 +332,26 @@ abstract class Kohana_Controller_HAPI extends Controller
 			return $this->_base_url;
 		}
 		$this->_base_url = $url;
+		return $this;
+	}
+
+	/**
+	 * Auto login for testing the API.
+	 *
+	 * @param int $user_id
+	 * @return bool|Kohana_Controller_HAPI
+	 */
+	private function _autologin($user_id)
+	{
+		if (empty($user_id) || Kohana::$environment !== Kohana::DEVELOPMENT)
+		{
+			return FALSE;
+		}
+		Auth::instance()->force_login($user_id);
+
+		// Hack to access the user object within the context of the current Request (without redirect)
+		Session::instance()->set(Kohana::$config->load('auth.session_key'), ORM::factory('User', ['id' => $user_id]));
+
 		return $this;
 	}
 }
