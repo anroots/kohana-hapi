@@ -4,6 +4,9 @@ abstract class Kohana_HAPI_Model
 
 	protected $_orm;
 
+	/**
+	 * @param ORM $orm
+	 */
 	public function __construct(ORM $orm)
 	{
 		$this->_orm = $orm;
@@ -29,6 +32,9 @@ abstract class Kohana_HAPI_Model
 		return $this->_orm->as_array();
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_metadata()
 	{
 		$metadata = [];

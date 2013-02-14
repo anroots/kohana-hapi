@@ -73,7 +73,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 
 		// Check request signature
 		if (Kohana::$config->load('hapi.require_signature')
-			&&! HAPI_Security::is_request_signature_valid($this->request))
+			&& ! HAPI_Security::is_request_signature_valid($this->request)
+		)
 		{
 			$http_401 = new HTTP_Exception_401('Request signature was invalid');
 			$http_401->request($this->request);
@@ -82,7 +83,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 		}
 
 		if (Kohana::$config->load('hapi.require_login')
-			&& ! HAPI_Security::is_request_authenticated($this->request))
+			&& ! HAPI_Security::is_request_authenticated($this->request)
+		)
 		{
 			$http_401 = new HTTP_Exception_401('Login required');
 			$http_401->request($this->request);
@@ -209,6 +211,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$this->response_encoder->add_data($data);
 		return $this;
 	}
+
 
 	/**
 	 * Instantiates the HAPI response encoder.
