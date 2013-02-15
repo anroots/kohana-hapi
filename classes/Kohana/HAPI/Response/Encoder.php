@@ -71,4 +71,61 @@ abstract class Kohana_HAPI_Response_Encoder
 	 * @since 1.0
 	 */
 	abstract public function encode();
+
+	/**
+	 * Filter the data by a list of array paths.
+	 * All items not specified in the array of paths will be excluded from the response.
+	 * The response is a single-level array with the paths as the keys.
+	 *
+	 * @see Arr::path
+	 * @param array $paths
+	 * @return \Kohana_HAPI_Response_Encoder
+	 */
+	public function filter_paths(array $paths)
+	{
+		if (empty($paths))
+		{
+			return $this;
+		}
+
+		$filtered_data = [];
+		foreach ($paths as $path)
+		{
+			$filtered_data[$path] = Arr::path($this->_data, $path);
+		}
+		$this->_data = $filtered_data;
+		return $this;
+	}
+
+	/**
+	 * @param array $keys
+	 * @param string $path
+	 * @return Kohana_HAPI_Response_Encoder
+	 */
+	public function filter_keys(array $keys, $path)
+	{
+		if (empty($keys) || empty($path))
+		{
+			return $this;
+		}
+
+		$path_data = Arr::path($this->_data, $path);
+
+		if ($path_data === NULL)
+		{
+			return $this;
+		}
+
+		$filtered_data = [];
+		foreach ($path_data as $i => $item)
+		{
+			foreach ($keys as $key)
+			{
+				$filtered_data[$i][$key] = Arr::path($item, $key);
+			}
+		}
+		$this->_data = $filtered_data;
+
+		return $this;
+	}
 }

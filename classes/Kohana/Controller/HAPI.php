@@ -44,6 +44,16 @@ abstract class Kohana_Controller_HAPI extends Controller
 	protected $_include_metadata = TRUE;
 
 	/**
+	 * @var array An array of paths to return. Defaults to everything.
+	 */
+	protected $_paths = [];
+
+	/**
+	 * @var array An array of keys to return. Defaults to everything.
+	 */
+	protected $_keys = [];
+
+	/**
 	 * @return string
 	 * @since 1.0
 	 */
@@ -112,6 +122,9 @@ abstract class Kohana_Controller_HAPI extends Controller
 		{
 			I18n::lang($preferred_language);
 		}
+
+		$this->_paths = $this->_extract_array($this->request->query('paths'));
+		$this->_keys = $this->_extract_array($this->request->query('keys'));
 	}
 
 	/**
@@ -195,6 +208,9 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public function after()
 	{
+		$this->response_encoder->filter_paths($this->_paths);
+		$this->response_encoder->filter_keys($this->_keys,$this->request->query('path'));
+
 		// Set the response body - ask HAPI encoder to transform its data into string
 		$this->response->body($this->response_encoder->encode());
 
@@ -353,5 +369,15 @@ abstract class Kohana_Controller_HAPI extends Controller
 		Session::instance()->set(Kohana::$config->load('auth.session_key'), ORM::factory('User', ['id' => $user_id]));
 
 		return $this;
+	}
+
+
+	private function _extract_array($keys)
+	{
+		if (empty($keys))
+		{
+			return [];
+		}
+		return explode(',', $keys);
 	}
 }

@@ -127,4 +127,5 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 		$controller_file_name = explode('_', $controller_class_name);
 		return ucfirst(Inflector::singular(end($controller_file_name)));
 	}
+
 }
