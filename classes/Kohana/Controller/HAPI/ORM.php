@@ -11,6 +11,11 @@
 abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 {
 
+	const DEFAULT_LIMIT = 50;
+	const DEFAULT_OFFSET = 0;
+
+	const MAX_LIMIT = 200;
+
 	/**
 	 * TRUE - use only get() method for GET requests
 	 * FALSE - use get_one() when param ID is give, get_all() when to ID is given
@@ -31,6 +36,16 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 	 */
 	protected $_orm;
 
+	/**
+	 * @var int SQL limit for $this->_orm. Used in get_all queries.
+	 */
+	protected $_limit;
+
+	/**
+	 * @var int SQL offset for $this->_orm. Used in get_all queries.
+	 */
+	protected $_offset;
+
 	public function before()
 	{
 		parent::before();
@@ -44,6 +59,26 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 		{
 			$this->_orm = ORM::factory($this->_orm_name, $this->request->param('id'));
 		}
+	}
+
+	public function get_all()
+	{
+		// Offset and limit can be passed to get_all queries.
+		//Use default values when they aren't present in query args.
+		$this->_limit = (int) $this->request->query('limit');
+		$this->_offset = (int) $this->request->query('offset');
+
+		if ($this->_limit <= 0 || $this->_limit > self::MAX_LIMIT)
+		{
+			$this->_limit = self::DEFAULT_LIMIT;
+		}
+		if ($this->_offset <= 0)
+		{
+			$this->_offset = self::DEFAULT_OFFSET;
+		}
+
+		$this->_orm->limit($this->_limit)
+			->offset($this->_offset);
 	}
 
 	/**
