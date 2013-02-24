@@ -88,6 +88,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		{
 			$http_401 = new HTTP_Exception_401('Request signature was invalid');
 			$http_401->request($this->request);
+			$http_401->authenticate('Login'); // Todo
 			$http_401->headers('www-authenticate', 'Digest'); // Todo
 			throw $http_401;
 		}
@@ -102,6 +103,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 		)
 		{
 			$http_401 = new HTTP_Exception_401('Login required');
+			$http_401->authenticate('Login'); // Todo
 			$http_401->request($this->request);
 			throw $http_401;
 		}
