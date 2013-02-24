@@ -211,7 +211,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public function after()
 	{
 		$this->response_encoder->filter_paths($this->_paths);
-		$this->response_encoder->filter_keys($this->_keys,$this->request->query('path'));
+		$this->response_encoder->filter_keys($this->_keys, $this->request->query('path'));
 
 		// Set the response body - ask HAPI encoder to transform its data into string
 		$this->response->body($this->response_encoder->encode());
@@ -361,10 +361,11 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	private function _autologin($user_id)
 	{
-		if (empty($user_id) || Kohana::$environment !== Kohana::DEVELOPMENT)
+		if (empty($user_id) || ! in_array(Kohana::$environment, [Kohana::TESTING, Kohana::DEVELOPMENT]))
 		{
 			return FALSE;
 		}
+
 		Auth::instance()->force_login($user_id);
 
 		// Hack to access the user object within the context of the current Request (without redirect)
