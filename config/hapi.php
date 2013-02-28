@@ -49,8 +49,9 @@ return [
 	'allow_origin'        => 'http://fanapp.local/',
 	/**
 	 * A list of language codes that are supported by the API
+	 * @example ['en', 'et']
 	 */
-	'supported_languages' => ['et', 'en'],
+	'supported_languages' => [],
 	/**
 	 * List of supported HAPI response encoders.
 	 *
