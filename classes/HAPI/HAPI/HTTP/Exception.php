@@ -1,6 +1,30 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+/**
+ * HTTP Exception override. Needs APPPATH/HTTP/Exception.php to extend this
+ *
+ * Tries to conform to api-problem content type
+ *
+ *     throw HTTP_Exception::factory(500,'Please specify the filters')->set_description_url('http://mylink.com/85');
+ *
+ * @link http://www.mwop.net/blog/2013-02-13-restful-apis-with-zf2-part-2.html
+ */
 class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 {
+
+	/**
+	 * @var string Link to an URL where one can get additional information about the particular problem. Required.
+	 */
+	protected $_described_by;
+
+	/**
+	 * @param string $url
+	 * @return $this
+	 */
+	public function set_description_url($url)
+	{
+		$this->_described_by = $url;
+		return $this;
+	}
 
 	/**
 	 * Generate a Response for the current Exception
@@ -10,7 +34,14 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 	 */
 	public function get_response()
 	{
-		return static::response($this);
+		$response = static::response($this);
+
+		$response_data = [
+			'describedBy' => $this->_described_by,
+			'httpStatus'  => $response->status(),
+			'title'       => $response->body()
+		];
+		return $response->body(json_encode($response_data));
 	}
 
 	/**
@@ -53,14 +84,9 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 			// Set the response headers
 			$response->headers('Content-Type', 'application/api-problem+json; charset='.Kohana::$charset);
 
-			$response_data = [
-				'describedBy' => 'http://en.wikipedia.org/wiki/List_of_HTTP_status_codes', // Todo
-				'httpStatus'  => $code,
-				'title'       => $message
-			];
 
 			// Set the response body
-			$response->body(json_encode($response_data));
+			$response->body($message);
 		} catch (Exception $e)
 		{
 			/**
