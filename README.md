@@ -1,6 +1,6 @@
 # Kohana HAPI
 
-**H**yperText Transfer Protocol **A**pplication **P**rogramming **I**nterface
+**H**yperMedia **A**pplication **P**rogramming **I**nterface
 
 The purpose of this module is to provide an easy framework for API-based development projects.
 

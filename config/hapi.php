@@ -24,6 +24,7 @@ return [
 	 * API version to use when the Accept header does not contain a version
 	 */
 	'default_version'     => '1.0',
+
 	/**
 	 * Require valid user before processing API requests
 	 */

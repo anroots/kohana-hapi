@@ -1,20 +1,20 @@
 {
-	"name"       :"anroots/kohana-hapi",
-	"type"       :"kohana-module",
-	"description":"HTTP API module for Kohana 3.3",
-	"keywords"   :["kohana", "api", "http", "REST", "kohana module"],
-	"homepage"   :"https://github.com/anroots/kohana-hapi",
-	"license"    :"MIT",
-	"authors"    :[
+	"name"       : "anroots/kohana-hapi",
+	"type"       : "kohana-module",
+	"description": "HTTP API module for Kohana 3.3",
+	"keywords"   : ["kohana", "api", "http", "REST", "kohana module"],
+	"homepage"   : "https://github.com/anroots/kohana-hapi",
+	"license"    : "MIT",
+	"authors"    : [
 		{
-			"name"    :"Ando Roots",
-			"email"   :"ando@sqroot.eu",
-			"homepage":"http://sqroot.eu",
-			"role"    :"Developer"
+			"name"    : "Ando Roots",
+			"email"   : "ando@sqroot.eu",
+			"homepage": "http://sqroot.eu",
+			"role"    : "Developer"
 		}
 	],
-	"require"    :{
-		"php"                :">=5.4.0",
-		"composer/installers":"*"
+	"require"    : {
+		"php"                : ">=5.4.0",
+		"composer/installers": "*"
 	}
 }

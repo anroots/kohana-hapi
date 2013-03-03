@@ -26,12 +26,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public $response_encoder;
 
 	/**
-	 * @var string Version string, as specified by the Accept HTTP header
-	 * @since 1.0
-	 */
-	private $_requested_version;
-
-	/**
 	 * @since 1.0
 	 * @var string API base URL
 	 */
@@ -53,14 +47,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	protected $_keys = [];
 
-	/**
-	 * @return string
-	 * @since 1.0
-	 */
-	public function get_requested_version()
-	{
-		return $this->_requested_version;
-	}
+
 
 	/**
 	 * @param Request $request
@@ -113,8 +100,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 		// Instantiate the encoder object for the response (based on the Accept header)
 		$this->response_encoder = $this->_get_response_encoder();
 
-		// Extract version string from the Accept header
-		$this->_requested_version = $this->_parse_version($this->response_encoder->content_type());
 
 		// Set current language
 		$supported_languages = Kohana::$config->load('hapi.supported_languages');
@@ -127,6 +112,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 
 		$this->_paths = $this->_extract_array($this->request->query('paths'));
 		$this->_keys = $this->_extract_array($this->request->query('keys'));
+
 	}
 
 	/**
@@ -295,24 +281,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 		}
 
 		return $hapi_encoder;
-	}
-
-	/**
-	 * Parse the HTTP Content-Type header and return current API version
-	 * Application APIs should be versioned by the following convention:
-	 *
-	 *     application/vnd.vendor.application-v2.0+json
-	 *
-	 * ...where vendor, application [second one] are placeholders
-	 *
-	 * @param string $content_type
-	 * @return string Current API version or 1.0 as the default
-	 * @since 1.0
-	 */
-	private function _parse_version($content_type)
-	{
-		preg_match('/-v(.*)\+/', $content_type, $matches);
-		return count($matches) === 2 ? $matches[1] : Kohana::$config->load('hapi.default_version');
 	}
 
 	/**
