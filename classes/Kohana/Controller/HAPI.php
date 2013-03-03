@@ -25,11 +25,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public $response_encoder;
 
-	/**
-	 * @since 1.0
-	 * @var string API base URL
-	 */
-	protected $_base_url;
 
 	/**
 	 * @since 1.0
@@ -41,7 +36,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 * @var array An array of paths to return. Defaults to everything.
 	 */
 	protected $_paths = [];
-
 
 
 	/**
@@ -285,28 +279,14 @@ abstract class Kohana_Controller_HAPI extends Controller
 	{
 		$protocol = $this->request->secure() ? 'https' : 'http';
 		return [
+			'api_version' => $this->_api_version,
 			'generated'   => time(),
-			'links'       => ['self' => URL::base($protocol).$this->request->uri()],
-			'api_version' => $this->_api_version
+			'_links'      => [
+				'self' => ['href' => URL::base($protocol).$this->request->uri()]
+			],
 		];
 	}
 
-
-
-	/**
-	 * @param null $url
-	 * @return Kohana_Controller_HAPI|string
-	 * @since 1.0
-	 */
-	public function base($url = NULL)
-	{
-		if ($url === NULL)
-		{
-			return $this->_base_url;
-		}
-		$this->_base_url = $url;
-		return $this;
-	}
 
 	/**
 	 * Auto login for testing the API.

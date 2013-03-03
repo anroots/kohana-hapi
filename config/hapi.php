@@ -19,12 +19,10 @@ return [
 	 * @var bool
 	 */
 	'development_mode'    => TRUE,
-
 	/**
 	 * API version to use when the Accept header does not contain a version
 	 */
 	'default_version'     => '1.0',
-
 	/**
 	 * Require valid user before processing API requests
 	 */
@@ -50,6 +48,7 @@ return [
 	'allow_origin'        => 'http://fanapp.local/',
 	/**
 	 * A list of language codes that are supported by the API
+	 *
 	 * @example ['en', 'et']
 	 */
 	'supported_languages' => [],
@@ -62,6 +61,7 @@ return [
 	 */
 	'encoders'            => [
 		'application/json'               => 'JSON',
+		'application/hal+json'           => 'HAL_JSON',
 		'application/vnd.no99-v1.0+json' => 'JSON'
 	],
 	/**
