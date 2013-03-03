@@ -1,18 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-/**
- * @license http://www.opensource.org/licenses/mit-license.php MIT
- * @author Ando Roots <ando@sqroot.eu>
- * @since 1.0
- * @package Kohana/HAPI
- * @copyright (c) 2012, Ando Roots
- */
-class Kohana_HAPI_Exception extends Kohana_HTTP_Exception
-{
+class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception {
 
 
+	/**
+	 * Generate a Response for the current Exception
+	 *
+	 * @uses   Kohana_Exception::response()
+	 * @return Response
+	 */
 	public function get_response()
 	{
-		return HAPI_Exception::response($this);
+		return static::response($this);
 	}
 
 	/**
@@ -24,7 +22,6 @@ class Kohana_HAPI_Exception extends Kohana_HTTP_Exception
 	 */
 	public static function response(Exception $e)
 	{
-
 		try
 		{
 			// Get the exception information
@@ -141,5 +138,4 @@ class Kohana_HAPI_Exception extends Kohana_HTTP_Exception
 
 		return $response;
 	}
-
 }
