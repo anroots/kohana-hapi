@@ -27,6 +27,20 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 	}
 
 	/**
+	 * Shorthand for throwing new HTTP exceptions
+	 *
+	 * @param int $code HTTP status code
+	 * @param string $described_by a URL to a document describing the error condition (required)
+	 * @param string $title a brief title for the error condition (required)
+	 * @param null|array $variables I18n replacements
+	 * @return $this
+	 */
+	public static function problem($code, $described_by, $title, array $variables = NULL)
+	{
+		return static::factory($code, $title, $variables)->set_description_url($described_by);
+	}
+
+	/**
 	 * Generate a Response for the current Exception
 	 *
 	 * @uses   Kohana_Exception::response()
