@@ -42,11 +42,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	protected $_paths = [];
 
-	/**
-	 * @var array An array of keys to return. Defaults to everything.
-	 */
-	protected $_keys = [];
-
 
 
 	/**
@@ -73,7 +68,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 			&& ! HAPI_Security::is_request_signature_valid($this->request)
 		)
 		{
-			$http_401 = new HTTP_Exception_401('Request signature was invalid');
+
+			$http_401 = new HTTP_Exception_400('Request signature was invalid');
 			$http_401->request($this->request);
 			$http_401->authenticate('Login'); // Todo
 			$http_401->headers('www-authenticate', 'Digest'); // Todo
@@ -111,7 +107,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 		}
 
 		$this->_paths = $this->_extract_array($this->request->query('paths'));
-		$this->_keys = $this->_extract_array($this->request->query('keys'));
 
 	}
 
@@ -197,7 +192,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	public function after()
 	{
 		$this->response_encoder->filter_paths($this->_paths);
-		$this->response_encoder->filter_keys($this->_keys, $this->request->query('path'));
 
 		// Set the response body - ask HAPI encoder to transform its data into string
 		$this->response->body($this->response_encoder->encode());
@@ -293,18 +287,11 @@ abstract class Kohana_Controller_HAPI extends Controller
 		return [
 			'generated'   => time(),
 			'links'       => ['self' => URL::base($protocol).$this->request->uri()],
-			'api_version' => $this->get_api_version()
+			'api_version' => $this->_api_version
 		];
 	}
 
-	/**
-	 * @return string
-	 * @since 1.0
-	 */
-	public function get_api_version()
-	{
-		return $this->_api_version;
-	}
+
 
 	/**
 	 * @param null $url

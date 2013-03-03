@@ -24,6 +24,7 @@ class Kohana_HAPI_Exception extends Kohana_HTTP_Exception
 	 */
 	public static function response(Exception $e)
 	{
+
 		try
 		{
 			// Get the exception information
