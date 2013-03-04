@@ -60,7 +60,7 @@ return [
 	 * @since 1.0
 	 */
 	'encoders'            => [
-		'application/json'               => 'JSON',
+		'application/hal+xml'            => 'HAL_XML',
 		'application/hal+json'           => 'HAL_JSON',
 		'application/vnd.no99-v1.0+json' => 'JSON'
 	],

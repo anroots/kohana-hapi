@@ -98,34 +98,30 @@ abstract class Kohana_HAPI_Response_Encoder
 	}
 
 	/**
-	 * @param array $keys
-	 * @param string $path
+	 * Implement response data sorting function.
+	 * Override and return the data unchanged to disable
+	 *
+	 * @param $response_data
+	 * @return bool
+	 */
+	public function sort_response($response_data)
+	{
+		asort($response_data);
+		return $response_data;
+	}
+
+	/**
+	 * @param $data
 	 * @return Kohana_HAPI_Response_Encoder
 	 */
-	public function filter_keys(array $keys, $path)
+	public function add_data($data)
 	{
-		if (empty($keys) || empty($path))
+		if ($this->_data === NULL)
 		{
-			return $this;
+			return $this->set_data($data);
 		}
 
-		$path_data = Arr::path($this->_data, $path);
-
-		if ($path_data === NULL)
-		{
-			return $this;
-		}
-
-		$filtered_data = [];
-		foreach ($path_data as $i => $item)
-		{
-			foreach ($keys as $key)
-			{
-				$filtered_data[$i][$key] = Arr::path($item, $key);
-			}
-		}
-		$this->_data = $filtered_data;
-
+		$this->_data = array_replace_recursive($this->_data, $data);
 		return $this;
 	}
 }

@@ -1,6 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
+class Kohana_HAPI_Response_HAL_XML extends Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 {
+
 	/**
 	 * Encode the response data
 	 *
@@ -10,6 +11,6 @@ class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder impleme
 	public function encode()
 	{
 		$hal = new \Nocarrier\Hal(Request::current()->uri(), $this->_data);
-		return $hal->asJson();
+		return $hal->asXml();
 	}
 }
