@@ -2,6 +2,9 @@
 trait Kohana_HAPI_ORM_Responder
 {
 
+	/**
+	 * @return array
+	 */
 	public function as_hapi_data()
 	{
 		$hapi_model = HAPI_Model::factory($this);

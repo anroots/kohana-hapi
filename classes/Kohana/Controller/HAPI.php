@@ -25,7 +25,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public $response_encoder;
 
-
 	/**
 	 * @since 1.0
 	 * @var bool
@@ -95,8 +94,16 @@ abstract class Kohana_Controller_HAPI extends Controller
 			I18n::lang($preferred_language);
 		}
 
+		$extract_array = function($keys){
+			if (empty($keys))
+			{
+				return [];
+			}
+			return explode(',', $keys);
+		};
+
 		// Filter response keys
-		$this->_paths = $this->_extract_array($this->request->query('paths'));
+		$this->_paths = $extract_array($this->request->query('paths'));
 
 	}
 
@@ -155,7 +162,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	protected function _determine_action()
 	{
-		// Defaults method is the HTTP verb
+		// Default method is the HTTP verb
 		$action = strtolower($this->request->method());
 
 		// Action (if not default) is appended to the HTTP verb
@@ -273,23 +280,9 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	public function get_metadata()
 	{
-		$protocol = $this->request->secure() ? 'https' : 'http';
 		return [
 			'api_version' => $this->_api_version,
-			'generated'   => time(),
-			'_links'      => [
-				'self' => ['href' => URL::base($protocol).$this->request->uri()]
-			],
+			'generated'   => time()
 		];
-	}
-
-
-	private function _extract_array($keys)
-	{
-		if (empty($keys))
-		{
-			return [];
-		}
-		return explode(',', $keys);
 	}
 }

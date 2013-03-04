@@ -18,7 +18,7 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 
 	/**
 	 * TRUE - use only get() method for GET requests
-	 * FALSE - use get_one() when param ID is give, get_all() when to ID is given
+	 * FALSE - use get_one() when param ID is given, get_all() when no ID is given
 	 *
 	 * @var bool
 	 * @since 1.0

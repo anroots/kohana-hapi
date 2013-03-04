@@ -57,6 +57,7 @@ class Kohana_HAPI_Security
 		// User is authenticated automatically on most AJAX calls.
 		// Session cookie is transmitted with the request
 		$user = Auth::instance()->get_user();
+
 		return $user !== NULL && $user->loaded();
 	}
 

@@ -2,6 +2,9 @@
 abstract class Kohana_HAPI_Model
 {
 
+	/**
+	 * @var ORM
+	 */
 	protected $_orm;
 
 	/**

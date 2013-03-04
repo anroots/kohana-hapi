@@ -44,7 +44,6 @@ return [
 	'encoders'            => [
 		'application/hal+xml'            => 'HAL_XML',
 		'application/hal+json'           => 'HAL_JSON',
-		'application/vnd.no99-v1.0+json' => 'JSON'
 	],
 	/**
 	 * Public key => Private key

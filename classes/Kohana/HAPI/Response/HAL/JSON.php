@@ -1,4 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+/**
+ * @link http://stateless.co/hal_specification.html
+ */
 class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 {
 	/**
