@@ -4,6 +4,7 @@
  */
 class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 {
+
 	/**
 	 * Encode the response data
 	 *
@@ -13,6 +14,12 @@ class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder impleme
 	public function encode()
 	{
 		$hal = new \Nocarrier\Hal(Request::current()->uri(), $this->_data);
+
+		foreach ($this->_links as $link)
+		{
+			$hal->addLink($link[0], $link[1], $link[2], $link[3]);
+		}
+
 		return $hal->asJson();
 	}
 }

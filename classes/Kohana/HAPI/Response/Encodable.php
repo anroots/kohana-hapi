@@ -40,4 +40,15 @@ interface Kohana_HAPI_Response_Encodable
 	 * @since 1.0
 	 */
 	public function encode();
+
+	/**
+	 * Add a link to the resource, identified by $rel, located at $uri, with an
+	 * optional $title
+	 *
+	 * @param string $rel
+	 * @param string $uri
+	 * @param string $title
+	 * @param array $attributes Other attributes, as defined by HAL spec and RFC 5988
+	 */
+	public function add_link($rel, $uri, $title = null, array $attributes = array());
 }

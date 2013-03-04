@@ -34,6 +34,11 @@ abstract class Kohana_HAPI_Response_Encoder
 	protected $_response;
 
 	/**
+	 * @var array
+	 */
+	protected $_links = [];
+
+	/**
 	 * @param Request $request
 	 * @param Response $response
 	 * @param string $content_type
@@ -123,5 +128,16 @@ abstract class Kohana_HAPI_Response_Encoder
 
 		$this->_data = array_replace_recursive($this->_data, $data);
 		return $this;
+	}
+
+	/**
+	 * @param $rel
+	 * @param $uri
+	 * @param null $title
+	 * @param array $attributes
+	 */
+	public function add_link($rel, $uri, $title = NULL, array $attributes = [])
+	{
+		$this->_links[] = [$rel, $uri, $title, $attributes];
 	}
 }

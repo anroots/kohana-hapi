@@ -11,6 +11,10 @@ class Kohana_HAPI_Response_HAL_XML extends Kohana_HAPI_Response_Encoder implemen
 	public function encode()
 	{
 		$hal = new \Nocarrier\Hal(Request::current()->uri(), $this->_data);
+		foreach ($this->_links as $link)
+		{
+			$hal->addLink($link[0], $link[1], $link[2], $link[3]);
+		}
 		return $hal->asXml();
 	}
 }
