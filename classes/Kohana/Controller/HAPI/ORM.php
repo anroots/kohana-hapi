@@ -23,7 +23,7 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 	 * @var bool
 	 * @since 1.0
 	 */
-	protected $_use_uniform_get = TRUE;
+	protected $_use_uniform_get = FALSE;
 
 	/**
 	 * @var string The name of the ORM model

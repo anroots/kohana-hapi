@@ -17,6 +17,10 @@ class Kohana_HAPI_Security
 	 */
 	public static function login($authorization_string)
 	{
+		if (Auth::instance()->logged_in())
+		{
+			return Auth::instance()->get_user();
+		}
 		// Basic ZGhhcmE6ddVzdA==
 		$tokens = Arr::get(explode(' ', $authorization_string), 1);
 
