@@ -39,8 +39,8 @@ return [
 	 * @since 1.0
 	 */
 	'encoders'            => [
-		'application/hal+xml'  => 'HAL_XML',
 		'application/hal+json' => 'HAL_JSON',
+		'application/hal+xml'  => 'HAL_XML'
 	],
 	/**
 	 * Public key => Private key
