@@ -1,8 +1,8 @@
 # Kohana HAPI
 
-**H**yperMedia **A**pplication **P**rogramming **I**nterface
+**H**yperMedia **A**pplication **P**rogramming **I**nterface - A Kohana module to use as a framework for building HTTP APIs.
 
-The purpose of this module is to provide an easy framework for API-based development projects.
+![Screenshot of a HTTP response](https://raw.github.com/anroots/kohana-hapi/master/guide/Screenshot-1.png)
 
 **In development. Do not use.** It is expected that the major (backwards incompatible) versions will be increased rapidly.
 
@@ -10,12 +10,12 @@ The purpose of this module is to provide an easy framework for API-based develop
 
 * Framework for adding API support to your Kohana project
 * Unfinished
+* Rather strict than general-purpose
 
 ## What it is not
 
 * RESTful - Well, a bit, but missing [level three of the API maturity model](http://www.crummy
 .com/writing/speaking/2008-QCon/act3.html)
-* General purpose
 * Scalable and optimized - mean for one server, one client approach where client is under vendor control
 * Tested
 

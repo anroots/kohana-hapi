@@ -13,8 +13,6 @@ return [
 	 * API version to use when the Accept header does not contain a version
 	 */
 	'default_version'     => '1.0',
-
-
 	/**
 	 * Set to FALSE to disable signature checks.
 	 * This allows processing of unsigned requests, useful in development
@@ -23,11 +21,10 @@ return [
 	 * @since 1.0
 	 */
 	'require_signature'   => Kohana::$environment === Kohana::PRODUCTION,
-
 	/**
 	 * @since 1.0
 	 */
-	'allow_origin'        => 'http://fanapp.local/',
+	'allow_origin'        => URL::base(Request::initial()->secure() ? 'https' : 'http'),
 	/**
 	 * A list of language codes that are supported by the API
 	 *
@@ -42,8 +39,8 @@ return [
 	 * @since 1.0
 	 */
 	'encoders'            => [
-		'application/hal+xml'            => 'HAL_XML',
-		'application/hal+json'           => 'HAL_JSON',
+		'application/hal+xml'  => 'HAL_XML',
+		'application/hal+json' => 'HAL_JSON',
 	],
 	/**
 	 * Public key => Private key
