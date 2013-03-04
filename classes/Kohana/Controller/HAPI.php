@@ -37,6 +37,10 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 */
 	protected $_paths = [];
 
+	/**
+	 * @var bool A valid Auth session must be set up to access this controller?
+	 */
+	protected $_require_login = TRUE;
 
 	/**
 	 * @param Request $request
@@ -62,8 +66,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 			&& ! HAPI_Security::is_request_signature_valid($this->request)
 		)
 		{
-			// Todo: change to 401
-			throw new HTTP_Exception_400('Request signature was invalid');
+			HAPI_Security::require_auth('Request signature was invalid');
 		}
 
 		// Login using basic auth
@@ -72,17 +75,12 @@ abstract class Kohana_Controller_HAPI extends Controller
 			HAPI_Security::login($this->request->headers('authorization'));
 		}
 
-		if (Kohana::$config->load('hapi.require_login')
-			&& ! HAPI_Security::is_request_authenticated($this->request)
+		// Check that user is authenticated
+		if ($this->_require_login && ! HAPI_Security::is_request_authenticated($this->request)
 		)
 		{
-			$http_401 = new HTTP_Exception_401('Login required');
-			$http_401->authenticate('Login'); // Todo
-			$http_401->request($this->request);
-			throw $http_401;
+			HAPI_Security::require_auth();
 		}
-
-		$this->_include_metadata = Kohana::$config->load('hapi.include_metadata');
 
 		// Instantiate the encoder object for the response (based on the Accept header)
 		$this->response_encoder = $this->_get_response_encoder();
@@ -97,6 +95,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 			I18n::lang($preferred_language);
 		}
 
+		// Filter response keys
 		$this->_paths = $this->_extract_array($this->request->query('paths'));
 
 	}

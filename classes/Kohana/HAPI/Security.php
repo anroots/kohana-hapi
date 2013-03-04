@@ -112,4 +112,17 @@ class Kohana_HAPI_Security
 		// Calculate the signature
 		return hash_hmac('sha256', json_encode($data_to_sign), $private_key);
 	}
+
+	/**
+	 * Send a www-authenticate response
+	 *
+	 * @param string $message
+	 * @throws HTTP_Exception_401
+	 */
+	public static function require_auth($message = 'Authenticate!')
+	{
+		$http_401 = new HTTP_Exception_401($message);
+		$http_401->authenticate('Basic realm="'.Kohana::$config->load("hapi.realm").'"');
+		throw $http_401;
+	}
 }

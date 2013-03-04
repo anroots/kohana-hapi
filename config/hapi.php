@@ -8,15 +8,13 @@
  */
 return [
 
-
+	'realm'               => 'Kohana HAPI',
 	/**
 	 * API version to use when the Accept header does not contain a version
 	 */
 	'default_version'     => '1.0',
-	/**
-	 * Require valid user before processing API requests
-	 */
-	'require_login'       => TRUE,
+
+
 	/**
 	 * Set to FALSE to disable signature checks.
 	 * This allows processing of unsigned requests, useful in development
@@ -25,13 +23,7 @@ return [
 	 * @since 1.0
 	 */
 	'require_signature'   => Kohana::$environment === Kohana::PRODUCTION,
-	/**
-	 * Automatically include request meta-data in the HAPI response
-	 * Example: response generation time
-	 *
-	 * @since 1.0
-	 */
-	'include_metadata'    => TRUE,
+
 	/**
 	 * @since 1.0
 	 */
