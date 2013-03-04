@@ -221,7 +221,25 @@ class Kohana_HAPI_Request extends Request
 		$this->headers('X-Auth', $this->hapi_profile_settings['public_key']);
 		$this->headers('X-Auth-Hash', $signature);
 
+		// Add Authorization header if not present
+		if (! array_key_exists('Authorization', $this->headers()) && Auth::instance()->logged_in())
+		{
+			$this->headers('Authorization', $this->authorize(Auth::instance()->get_user()));
+		}
 		return parent::execute();
+	}
+
+	/**
+	 * Add Authorization headers from the current user
+	 *
+	 * @param Model_User $user
+	 * @return $this
+	 */
+	public function authorize(Model_User $user)
+	{
+		$base64_auth_str = base64_encode($user->username.':'.$user->api_token);
+		$this->headers('Authorization', "Basic $base64_auth_str");
+		return $this;
 	}
 
 }
