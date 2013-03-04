@@ -62,17 +62,14 @@ abstract class Kohana_Controller_HAPI extends Controller
 			&& ! HAPI_Security::is_request_signature_valid($this->request)
 		)
 		{
-
-			$http_401 = new HTTP_Exception_400('Request signature was invalid');
-			$http_401->request($this->request);
-			$http_401->authenticate('Login'); // Todo
-			$http_401->headers('www-authenticate', 'Digest'); // Todo
-			throw $http_401;
+			// Todo: change to 401
+			throw new HTTP_Exception_400('Request signature was invalid');
 		}
 
-		if (Kohana::$config->load('hapi.development_mode'))
+		// Login using basic auth
+		if (array_key_exists('authorization', $this->request->headers()))
 		{
-			$this->_autologin($this->request->query('_hapi_login'));
+			HAPI_Security::login($this->request->headers('authorization'));
 		}
 
 		if (Kohana::$config->load('hapi.require_login')
@@ -285,28 +282,6 @@ abstract class Kohana_Controller_HAPI extends Controller
 				'self' => ['href' => URL::base($protocol).$this->request->uri()]
 			],
 		];
-	}
-
-
-	/**
-	 * Auto login for testing the API.
-	 *
-	 * @param int $user_id
-	 * @return bool|Kohana_Controller_HAPI
-	 */
-	private function _autologin($user_id)
-	{
-		if (empty($user_id) || ! in_array(Kohana::$environment, [Kohana::TESTING, Kohana::DEVELOPMENT]))
-		{
-			return FALSE;
-		}
-
-		Auth::instance()->force_login($user_id);
-
-		// Hack to access the user object within the context of the current Request (without redirect)
-		Session::instance()->set(Kohana::$config->load('auth.session_key'), ORM::factory('User', ['id' => $user_id]));
-
-		return $this;
 	}
 
 

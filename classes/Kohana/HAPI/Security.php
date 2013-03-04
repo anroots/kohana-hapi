@@ -10,7 +10,44 @@ class Kohana_HAPI_Security
 {
 
 	/**
-	 * //todo: when session cookie is omitted try to login with basic auth
+	 * Login using HTTP Basic Auth. `username` and `api_token` columns are used for authentication.
+	 *
+	 * @param string $authorization_string HTTP 'Authorization' header value
+	 * @return bool|Model_User Logged in user or false
+	 */
+	public static function login($authorization_string)
+	{
+		// Basic ZGhhcmE6ddVzdA==
+		$tokens = Arr::get(explode(' ', $authorization_string), 1);
+
+		// ZGhhcmE6ddVzdA==
+		$tokens = base64_decode($tokens);
+
+		// user:pass
+		$tokens = explode(':', $tokens);
+		$username = Arr::get($tokens, 0);
+		$api_token = Arr::get($tokens, 1);
+
+		if (empty($username) || empty($api_token))
+		{
+			return FALSE;
+		}
+
+		$user = ORM::factory('User', ['username' => $username, 'api_token' => $api_token]);
+		if (! $user->loaded())
+		{
+			return FALSE;
+		}
+
+		Auth::instance()->force_login($user);
+
+		// Hack to access the user object within the context of the current Request (without redirect)
+		Session::instance()->set(Kohana::$config->load('auth.session_key'), $user);
+		return $user;
+	}
+
+	/**
+	 * Check that we have an active Auth session
 	 *
 	 * @param Request $request
 	 * @return bool

@@ -1,0 +1,2 @@
+ALTER TABLE  `users` ADD  `api_token` VARCHAR( 32 ) NULL DEFAULT NULL COMMENT  'Token for authenticating with the HAPI module' AFTER  `password`
+ALTER TABLE  `areston_erebor`.`users` ADD UNIQUE  `users_hapi_username_token` (  `username` ,  `api_token` );

@@ -98,6 +98,10 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 			// Set the response headers
 			$response->headers('Content-Type', 'application/api-problem+json; charset='.Kohana::$charset);
 
+			if (empty($message))
+			{
+				$message = Arr::get(Response::$messages, $response->status());
+			}
 
 			// Set the response body
 			$response->body($message);
