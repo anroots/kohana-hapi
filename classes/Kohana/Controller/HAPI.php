@@ -94,7 +94,8 @@ abstract class Kohana_Controller_HAPI extends Controller
 			I18n::lang($preferred_language);
 		}
 
-		$extract_array = function($keys){
+		$extract_array = function ($keys)
+		{
 			if (empty($keys))
 			{
 				return [];
@@ -230,16 +231,17 @@ abstract class Kohana_Controller_HAPI extends Controller
 		$supported_encoders = Kohana::$config->load('hapi.encoders');
 
 		// Get the MIME type to use as the Response Content-Type
-		$preferred_response_mime = $this->request->headers()
-			->preferred_accept(array_keys($supported_encoders));
+		$preferred_response_mime = HAPI_Request::get_encoder_mime($this->request->headers());
 
+		// No encoder found, use a generic response encoder
 		if (! $preferred_response_mime)
 		{
-			throw new HTTP_Exception_406;
+			$encoder_to_use = 'Encoder';
+		} else
+		{
+			// Get the class name of the encoder to use to transform data into the appropriate Content-Type
+			$encoder_to_use = $supported_encoders[$preferred_response_mime];
 		}
-
-		// Get the class name of the encoder to use to transform data into the appropriate Content-Type
-		$encoder_to_use = $supported_encoders[$preferred_response_mime];
 
 		// Encoder class not found
 		if (! class_exists($prefix.$encoder_to_use))

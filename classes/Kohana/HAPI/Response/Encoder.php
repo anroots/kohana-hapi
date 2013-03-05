@@ -6,7 +6,7 @@
  * @package Kohana/HAPI
  * @copyright (c) 2012, Ando Roots
  */
-abstract class Kohana_HAPI_Response_Encoder
+class Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 {
 
 	/**
@@ -75,7 +75,10 @@ abstract class Kohana_HAPI_Response_Encoder
 	 * @return string
 	 * @since 1.0
 	 */
-	abstract public function encode();
+	public function encode()
+	{
+		return $this->_data;
+	}
 
 	/**
 	 * Filter the data by a list of array paths.
