@@ -20,7 +20,7 @@ return [
 	 *
 	 * @since 1.0
 	 */
-	'require_signature'   => Kohana::$environment === Kohana::PRODUCTION,
+	'require_signature'   => FALSE,
 	/**
 	 * @since 1.0
 	 */
