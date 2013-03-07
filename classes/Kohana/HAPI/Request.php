@@ -246,9 +246,12 @@ class Kohana_HAPI_Request extends Request
 	 * @param Kohana_HTTP_Header $headers
 	 * @return string|bool The MIME type to use as the response Content-Type or False if no suitable encoder is configured
 	 */
-	public static function get_encoder_mime(Kohana_HTTP_Header $headers)
+	public static function get_encoder_mime(Kohana_HTTP_Header $headers = NULL)
 	{
-
+		if ($headers === NULL)
+		{
+			$headers = Request::current()->headers();
+		}
 		// Config file maps supported encoder classes with MIME types
 		$supported_encoders = Kohana::$config->load('hapi.encoders');
 

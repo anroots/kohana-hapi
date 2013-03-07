@@ -48,6 +48,16 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 	 */
 	public function get_response()
 	{
+		// Use plain HTML response if the Request does not Accept any of the defined encoders
+		$preferred_accept = Request::current()->headers()->preferred_accept(
+			['text/html','application/json', 'application/hal+json']
+		);
+
+		if ($preferred_accept === 'text/html')
+		{
+			return parent::get_response();
+		}
+
 		$response = static::response($this);
 
 		$response_data = [
