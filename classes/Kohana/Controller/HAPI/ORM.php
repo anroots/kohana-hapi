@@ -11,8 +11,27 @@
 abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 {
 
+	/**
+	 * Number of results to return for GET queries when no limit is specified
+	 */
 	const DEFAULT_ITEMS_PER_PAGE = 50;
+
+	/**
+	 * Page sizes can not exceed this value
+	 */
 	const MAX_ITEMS_PER_PAGE = 200;
+
+
+	/**
+	 * @var string Default sort direction from (asc|desc)
+	 */
+	public $_direction = 'asc';
+
+	/**
+	 * @var string Column name to order results by
+	 * @see HAPI_ORM_Responder::hapi_order_by
+	 */
+	public $_orderby;
 
 	/**
 	 * TRUE - use only get() method for GET requests
@@ -43,11 +62,13 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 	{
 		parent::before();
 
+		// Try to get the matching ORM model name
 		if ($this->_orm_name === NULL)
 		{
 			$this->_orm_name = $this->_get_orm_name();
 		}
 
+		// Try to instantiate and load the ORM model
 		if ($this->_orm === NULL && class_exists('Model_'.$this->_orm_name))
 		{
 			$this->_orm = ORM::factory($this->_orm_name, $this->request->param('id'));
@@ -64,6 +85,17 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 			$this->_per_page = self::DEFAULT_ITEMS_PER_PAGE;
 		}
 
+		if ($this->request->query('direction'))
+		{
+			$this->_direction = strtolower($this->request->query('direction')) === 'desc' ? 'desc' : 'asc';
+		}
+
+		if ($this->_orderby = $this->request->query('orderby'))
+		{
+			$this->_direction = $this->request->query('direction');
+			$this->_orm->hapi_order_by($this->_orderby, $this->_direction);
+		}
+
 		$total_rows_query = clone $this->_orm;
 		$total_rows = $total_rows_query->count_all();
 
@@ -71,12 +103,13 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 			[
 				'total_items'    => $total_rows,
 				'items_per_page' => $this->_per_page,
-				'current_page'=> ['page'=>$this->request->query('p')]
+				'current_page'   => ['page' => $this->request->query('p') ? $this->request->query('p') : 1]
 			]
 		);
 
 		$this->_orm->offset($pagination->offset)
 			->limit($pagination->items_per_page);
+
 
 		$this->response_encoder->add_link(
 			'next',
@@ -101,7 +134,13 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 					'total_items'    => $total_rows,
 					'items_per_page' => $this->_per_page,
 					'total_pages'    => $pagination->total_pages,
-					'current_page'=> $pagination->current_page
+					'current_page'   => $pagination->current_page
+				],
+				'filters'    => [
+					'orderby' => [
+						'direction' => $this->_direction,
+						'key'=>$this->_orderby
+					]
 				]
 			]
 		);
