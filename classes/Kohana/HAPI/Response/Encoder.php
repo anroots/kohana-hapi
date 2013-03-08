@@ -143,4 +143,5 @@ class Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 	{
 		$this->_links[] = [$rel, $uri, $title, $attributes];
 	}
+
 }

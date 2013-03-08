@@ -11,10 +11,8 @@
 abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 {
 
-	const DEFAULT_LIMIT = 50;
-	const DEFAULT_OFFSET = 0;
-
-	const MAX_LIMIT = 200;
+	const DEFAULT_ITEMS_PER_PAGE = 50;
+	const MAX_ITEMS_PER_PAGE = 200;
 
 	/**
 	 * TRUE - use only get() method for GET requests
@@ -37,14 +35,9 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 	protected $_orm;
 
 	/**
-	 * @var int SQL limit for $this->_orm. Used in get_all queries.
+	 * @var int Default number of rows to show per page
 	 */
-	protected $_limit;
-
-	/**
-	 * @var int SQL offset for $this->_orm. Used in get_all queries.
-	 */
-	protected $_offset;
+	protected $_per_page;
 
 	public function before()
 	{
@@ -63,22 +56,55 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 
 	public function get_all()
 	{
-		// Offset and limit can be passed to get_all queries.
-		//Use default values when they aren't present in query args.
-		$this->_limit = (int) $this->request->query('limit');
-		$this->_offset = (int) $this->request->query('offset');
 
-		if ($this->_limit <= 0 || $this->_limit > self::MAX_LIMIT)
+		$this->_per_page = (int) $this->request->query('items_per_page');
+
+		if ($this->_per_page < 1 || $this->_per_page > self::MAX_ITEMS_PER_PAGE)
 		{
-			$this->_limit = self::DEFAULT_LIMIT;
-		}
-		if ($this->_offset <= 0)
-		{
-			$this->_offset = self::DEFAULT_OFFSET;
+			$this->_per_page = self::DEFAULT_ITEMS_PER_PAGE;
 		}
 
-		$this->_orm->limit($this->_limit)
-			->offset($this->_offset);
+		$total_rows_query = clone $this->_orm;
+		$total_rows = $total_rows_query->count_all();
+
+		$pagination = Pagination::factory(
+			[
+				'total_items'    => $total_rows,
+				'items_per_page' => $this->_per_page,
+				'current_page'=> ['page'=>$this->request->query('p')]
+			]
+		);
+
+		$this->_orm->offset($pagination->offset)
+			->limit($pagination->items_per_page);
+
+		$this->response_encoder->add_link(
+			'next',
+			URL::full_base(
+				$this->request->uri().URL::query(['p' => $pagination->next_page])
+			)
+		);
+
+		$this->response_encoder->add_link(
+			'prev',
+			URL::full_base(
+				$this->request->uri().URL::query
+					(
+						['p' => $pagination->previous_page]
+					)
+			)
+		);
+
+		$this->hapi(
+			[
+				'pagination' => [
+					'total_items'    => $total_rows,
+					'items_per_page' => $this->_per_page,
+					'total_pages'    => $pagination->total_pages,
+					'current_page'=> $pagination->current_page
+				]
+			]
+		);
 	}
 
 	/**
