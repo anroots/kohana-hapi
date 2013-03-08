@@ -50,7 +50,7 @@ class HAPI_HAPI_HTTP_Exception extends Kohana_HTTP_Exception
 	{
 		// Use plain HTML response if the Request does not Accept any of the defined encoders
 		$preferred_accept = Request::current()->headers()->preferred_accept(
-			['text/html','application/json', 'application/hal+json']
+			['application/hal+json', 'application/json', 'text/html']
 		);
 
 		if ($preferred_accept === 'text/html')
