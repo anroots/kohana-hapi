@@ -57,3 +57,14 @@ $this->hapi(['about' => 'Hello, world']);
 * Improve architecture
 * Improve API semantics: provide meaningful error and status messages in response body
 * Work towards achieving REST
+
+# Bibliography
+
+* [HAL - Hypertext Application Language](http://stateless.co/hal_specification.html)
+* [JSON Linking with HAL](http://blog.stateless.co/post/13296666138/json-linking-with-hal)
+* [REST+JSON API Design - Best Practices for Developers](http://www.youtube
+.com/watch?v=hdSrT4yjS1g&list=PL40E8C61DBE5F4266&index=25)
+* [SymfonyLive Paris 2012 - David Zuelke Designing HTTP Interfaces And RESTful Web Services](http://www.youtube
+.com/watch?v=XzgCzjMdvRE&list=PL40E8C61DBE5F4266&index=27)
+* [How to GET a Cup of Coffee](http://www.infoq.com/articles/webber-rest-workflow)
+* [How I Explained REST to My Wife](http://tomayko.com/writings/rest-to-my-wife)
