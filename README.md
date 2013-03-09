@@ -60,6 +60,7 @@ $this->hapi(['about' => 'Hello, world']);
 
 # Bibliography
 
+* [What you should know about API-centric web development](http://waher.net/archives/1158)
 * [HAL - Hypertext Application Language](http://stateless.co/hal_specification.html)
 * [JSON Linking with HAL](http://blog.stateless.co/post/13296666138/json-linking-with-hal)
 * [REST+JSON API Design - Best Practices for Developers](http://www.youtube
