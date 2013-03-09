@@ -75,17 +75,19 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 		}
 	}
 
-	
+
 	public function get_all()
 	{
+		$this->apply_search()
+			->paginate();
+	}
 
-		$search_query = $this->request->query('q');
-		if ($search_query)
-		{
-			$this->_orm->search($search_query);
-			$this->hapi(['filters' => ['query' => $search_query]]);
-		}
 
+	/**
+	 * @return $this
+	 */
+	public function paginate()
+	{
 		$this->_per_page = (int) $this->request->query('items_per_page');
 
 		if ($this->_per_page < 1 || $this->_per_page > self::MAX_ITEMS_PER_PAGE)
@@ -136,7 +138,6 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 			)
 		);
 
-
 		$this->hapi(
 			[
 				'pagination' => [
@@ -153,6 +154,27 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 				]
 			]
 		);
+
+		return $this;
+	}
+
+	/**
+	 * @param null|string $search_query
+	 * @return Kohana_Controller_HAPI_ORM
+	 */
+	public function apply_search($search_query = NULL)
+	{
+		if ($search_query === NULL)
+		{
+			$search_query = $this->request->query('q');
+		}
+
+		if (! empty($search_query))
+		{
+			$this->_orm->search($search_query);
+			$this->hapi(['filters' => ['query' => $search_query]]);
+		}
+		return $this;
 	}
 
 	/**
