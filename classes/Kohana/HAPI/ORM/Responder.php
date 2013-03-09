@@ -23,4 +23,13 @@ trait Kohana_HAPI_ORM_Responder
 	{
 		return $this->order_by($key, $direction);
 	}
+
+	/**
+	 * @param string $query_string
+	 * @return ORM
+	 */
+	public function search($query_string)
+	{
+		return $this->where('name', 'LIKE', "%$query_string%");
+	}
 }

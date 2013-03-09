@@ -75,8 +75,16 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 		}
 	}
 
+	
 	public function get_all()
 	{
+
+		$search_query = $this->request->query('q');
+		if ($search_query)
+		{
+			$this->_orm->search($search_query);
+			$this->hapi(['filters' => ['query' => $search_query]]);
+		}
 
 		$this->_per_page = (int) $this->request->query('items_per_page');
 
@@ -128,6 +136,7 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 			)
 		);
 
+
 		$this->hapi(
 			[
 				'pagination' => [
@@ -139,7 +148,7 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 				'filters'    => [
 					'orderby' => [
 						'direction' => $this->_direction,
-						'key'=>$this->_orderby
+						'key'       => $this->_orderby
 					]
 				]
 			]
