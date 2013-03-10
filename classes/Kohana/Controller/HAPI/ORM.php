@@ -202,10 +202,16 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 		// If the action doesn't exist, it's a 404
 		if (! method_exists($this, $action))
 		{
-			throw new HTTP_Exception_404(
+
+			$implemented_methods = get_class_methods($this);
+			$http_verbs = ['post', 'get', 'put', 'delete'];
+			$allowed_methods = array_intersect($http_verbs, $implemented_methods);
+
+			throw HTTP_Exception::factory(
+				405,
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())
-			);
+			)->allowed($allowed_methods);
 		}
 		return $action;
 	}

@@ -20,7 +20,7 @@ class Kohana_HAPI_Request extends Request
 	 *
 	 * @since 1.0
 	 * @param string $profile_name
-	 * @return Kohana_HAPI_Request
+	 * @return HAPI_Request
 	 */
 	public function load_config($profile_name = 'default')
 	{
@@ -34,7 +34,7 @@ class Kohana_HAPI_Request extends Request
 	 *
 	 * @since 1.0
 	 * @param array|null $put_data Array of data to include as the request body
-	 * @return mixed
+	 * @return HAPI_Request
 	 */
 	public function put(array $put_data = NULL)
 	{
@@ -233,7 +233,7 @@ class Kohana_HAPI_Request extends Request
 	 * Add Authorization headers from the current user
 	 *
 	 * @param Model_User $user
-	 * @return $this
+	 * @return HAPI_Request
 	 */
 	public function authorize(Model_User $user)
 	{
