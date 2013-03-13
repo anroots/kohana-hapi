@@ -20,6 +20,11 @@ class Kohana_HAPI_Response_HAL_JSON extends Kohana_HAPI_Response_Encoder impleme
 			$hal->addLink($link[0], $link[1], $link[2], $link[3]);
 		}
 
+		foreach ($this->_resources as $resource)
+		{
+			$hal->addResource($resource[0], $resource[1]);
+		}
+
 		return $hal->asJson();
 	}
 }

@@ -205,7 +205,7 @@ abstract class Kohana_Controller_HAPI extends Controller
 	 *
 	 * @since 1.0
 	 * @param array $data
-	 * @return Kohana_Controller_HAPI_Provider
+	 * @return Controller_HAPI
 	 */
 	public function hapi($data)
 	{

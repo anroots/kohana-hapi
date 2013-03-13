@@ -39,6 +39,11 @@ class Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 	protected $_links = [];
 
 	/**
+	 * @var array
+	 */
+	protected $_resources = [];
+
+	/**
 	 * @param Request $request
 	 * @param Response $response
 	 * @param string $content_type
@@ -138,10 +143,23 @@ class Kohana_HAPI_Response_Encoder implements HAPI_Response_Encodable
 	 * @param $uri
 	 * @param null $title
 	 * @param array $attributes
+	 * @return $this
 	 */
 	public function add_link($rel, $uri, $title = NULL, array $attributes = [])
 	{
 		$this->_links[] = [$rel, $uri, $title, $attributes];
+		return $this;
+	}
+
+	/**
+	 * @param $string
+	 * @param \Nocarrier\Hal $resource
+	 * @return $this
+	 */
+	public function add_resource($string, \Nocarrier\Hal $resource)
+	{
+		$this->_resources[] = [$string, $resource];
+		return $this;
 	}
 
 }
