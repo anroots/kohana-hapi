@@ -2,6 +2,11 @@
 trait Kohana_HAPI_ORM_Responder
 {
 
+    /**
+     * @var string Use this column in default search() queries
+     */
+    protected $_search_key = 'name';
+
 	/**
 	 * @return array
 	 */
@@ -30,6 +35,6 @@ trait Kohana_HAPI_ORM_Responder
 	 */
 	public function search($query_string)
 	{
-		return $this->where('name', 'LIKE', "%$query_string%");
+		return $this->where($this->_search_key, 'LIKE', "%$query_string%");
 	}
 }
