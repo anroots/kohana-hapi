@@ -78,8 +78,16 @@ abstract class Kohana_Controller_HAPI_ORM extends Controller_HAPI
 
 	public function get_all()
 	{
-		$this->apply_search()
-			->paginate();
+        if (!$this->_orm instanceof ORM){
+            return;
+        }
+
+        // Apply search restrictions to the result set if the ORM model is searchable
+        if (in_array('ORM_Interface_Searchable', class_implements($this->_orm))) {
+		    $this->apply_search();
+        }
+
+        $this->paginate();
 	}
 
 

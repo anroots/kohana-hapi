@@ -18,7 +18,7 @@ trait Kohana_HAPI_ORM_Responder
 
 	/**
 	 * Wrapper for ordering results.
-	 * Can be overriden for more complex queries
+	 * Can be overwritten for more complex queries
 	 *
 	 * @param string $key
 	 * @param string $direction
